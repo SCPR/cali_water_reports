@@ -63,6 +63,15 @@ class LoadMonthlyEnforcementStats(object):
             shutil.move(self.file_created_csv_path, self.data_path)
         except:
             logger.debug("file already exists in data folder")
+            logger.debug("moving %s" % (self.file_name))
+            if os.path.exists("%s/%s" % (self.data_path, self.file_name)):
+                os.remove("%s/%s" % (self.data_path, self.file_name))
+                shutil.move(self.file_download_excel_path, self.data_path)
+            logger.debug("moving %s" % (os.path.basename(self.file_created_csv_path)))
+            if os.path.exists("%s/%s" % (self.data_path, os.path.basename(self.file_created_csv_path))):
+                os.remove("%s/%s" % (self.data_path, os.path.basename(self.file_created_csv_path)))
+                shutil.move(self.file_created_csv_path, self.data_path)
+
 
     def _can_build_model_instance(self, file_created_csv_path):
         """

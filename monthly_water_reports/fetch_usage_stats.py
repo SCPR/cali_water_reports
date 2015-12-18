@@ -55,6 +55,11 @@ class BuildMonthlyWaterUseReport(object):
         "Comments/Corrections",
     ]
 
+    suppliers_to_skip = [
+        "city-of-coalinga",
+        "mountain-house-community-services-district"
+    ]
+
     sluggy = MonthlyFormattingMethods()
 
     def _init(self, *args, **kwargs):
@@ -69,6 +74,15 @@ class BuildMonthlyWaterUseReport(object):
             shutil.move(self.file_created_csv_path, self.data_path)
         except:
             logger.debug("file already exists in data folder")
+            logger.debug("moving %s" % (self.file_name))
+            if os.path.exists("%s/%s" % (self.data_path, self.file_name)):
+                os.remove("%s/%s" % (self.data_path, self.file_name))
+                shutil.move(self.file_download_excel_path, self.data_path)
+            logger.debug("moving %s" % (os.path.basename(self.file_created_csv_path)))
+            if os.path.exists("%s/%s" % (self.data_path, os.path.basename(self.file_created_csv_path))):
+                os.remove("%s/%s" % (self.data_path, os.path.basename(self.file_created_csv_path)))
+                shutil.move(self.file_created_csv_path, self.data_path)
+
 
     def _can_build_model_instance(self, file_created_csv_path):
         """
@@ -228,10 +242,7 @@ class BuildMonthlyWaterUseReport(object):
         save water supplier model instance from dictionary
         """
         try:
-
-            if data["supplier_slug"] == "city-of-coalinga":
-                pass
-            elif data["supplier_slug"] == "mountain-house-community-services-district":
+            if data["supplier_slug"] in self.suppliers_to_skip:
                 pass
             else:
                 obj, created = WaterSupplier.objects.update_or_create(
@@ -262,40 +273,43 @@ class BuildMonthlyWaterUseReport(object):
         save monthly water supplier model instance from dictionary
         """
         try:
-            supplier = WaterSupplier.objects.get(supplier_slug = data["supplier_slug"])
-            report, created = supplier.watersuppliermonthlyreport_set.update_or_create(
-                reporting_month = data["reporting_month"],
-                report_date = data["report_date"],
-                supplier_name = data["supplier_name"],
-                defaults = {
-                    "supplier_slug": data["supplier_slug"],
-                    "stage_invoked": data["stage_invoked"],
-                    "mandatory_restrictions": data["mandatory_restrictions"],
-                    "reporting_month": data["reporting_month"],
-                    "total_monthly_potable_water_production_2014": data["total_monthly_potable_water_production_2014"],
-                    "total_monthly_potable_water_production_2013": data["total_monthly_potable_water_production_2013"],
-                    "units": data["units"].upper(),
-                    "qualification": data["qualification"],
-                    "total_population_served": data["total_population_served"],
-                    "reported_rgpcd": data["reported_rgpcd"],
-                    "enforcement_actions": data["enforcement_actions"],
-                    "implementation": data["implementation"],
-                    "recycled_water": data["recycled_water"],
-                    "recycled_water_units": data["recycled_water_units"],
-                    "calculated_production_monthly_gallons_month_2014": data["calculated_production_monthly_gallons_month_2014"],
-                    "calculated_production_monthly_gallons_month_2013": data["calculated_production_monthly_gallons_month_2013"],
-                    "calculated_rgpcd_2014": data["calculated_rgpcd_2014"],
-                    # "calculated_rgpcd_2013": data["calculated_rgpcd_2013"],
-                    "percent_residential_use": data["percent_residential_use"],
-                    "comments_or_corrections": data["comments_or_corrections"],
-                    "hydrologic_region": data["hydrologic_region"],
-                    "hydrologic_region_slug": data["hydrologic_region_slug"],
-                }
-            )
-            if created:
-                logger.debug("%s created for %s" % (data["supplier_name"], data["reporting_month"]))
+            if data["supplier_slug"] in self.suppliers_to_skip:
+                pass
             else:
-                logger.debug("%s - %s exists" % (data["supplier_name"], data["reporting_month"]))
+                supplier = WaterSupplier.objects.get(supplier_slug = data["supplier_slug"])
+                report, created = supplier.watersuppliermonthlyreport_set.update_or_create(
+                    reporting_month = data["reporting_month"],
+                    report_date = data["report_date"],
+                    supplier_name = data["supplier_name"],
+                    defaults = {
+                        "supplier_slug": data["supplier_slug"],
+                        "stage_invoked": data["stage_invoked"],
+                        "mandatory_restrictions": data["mandatory_restrictions"],
+                        "reporting_month": data["reporting_month"],
+                        "total_monthly_potable_water_production_2014": data["total_monthly_potable_water_production_2014"],
+                        "total_monthly_potable_water_production_2013": data["total_monthly_potable_water_production_2013"],
+                        "units": data["units"].upper(),
+                        "qualification": data["qualification"],
+                        "total_population_served": data["total_population_served"],
+                        "reported_rgpcd": data["reported_rgpcd"],
+                        "enforcement_actions": data["enforcement_actions"],
+                        "implementation": data["implementation"],
+                        "recycled_water": data["recycled_water"],
+                        "recycled_water_units": data["recycled_water_units"],
+                        "calculated_production_monthly_gallons_month_2014": data["calculated_production_monthly_gallons_month_2014"],
+                        "calculated_production_monthly_gallons_month_2013": data["calculated_production_monthly_gallons_month_2013"],
+                        "calculated_rgpcd_2014": data["calculated_rgpcd_2014"],
+                        # "calculated_rgpcd_2013": data["calculated_rgpcd_2013"],
+                        "percent_residential_use": data["percent_residential_use"],
+                        "comments_or_corrections": data["comments_or_corrections"],
+                        "hydrologic_region": data["hydrologic_region"],
+                        "hydrologic_region_slug": data["hydrologic_region_slug"],
+                    }
+                )
+                if created:
+                    logger.debug("%s created for %s" % (data["supplier_name"], data["reporting_month"]))
+                else:
+                    logger.debug("%s - %s exists" % (data["supplier_name"], data["reporting_month"]))
         except ObjectDoesNotExist, exception:
             traceback.print_exc(file=sys.stdout)
             error_output = "%s %s" % (exception, data)
