@@ -168,12 +168,9 @@ class TestFetchUsageStats(TestCase):
                 item["expected_keys"] = self.list_of_usage_keys
             elif item["category"] == "enforcement":
                 item["expected_keys"] = self.list_of_enforcement_keys
-            excel_file_exists = os.path.isfile(item["file_download_excel_path"])
-            csv_file_exists = os.path.isfile(item["file_created_csv_path"])
-            if excel_file_exists == False and csv_file_exists == False:
-                self.Test_can_get_response_success_from_url(item)
-                self.Test_can_write_excel_file_from(item)
-                self.Test_can_convert_excel_file_to(item)
+            self.Test_can_get_response_success_from_url(item)
+            self.Test_can_write_excel_file_from(item)
+            self.Test_can_convert_excel_file_to(item)
             self.Test_can_find_expected_keys(item)
             self.Test_can_make_string_to_datetime(item)
 
