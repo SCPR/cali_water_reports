@@ -1,0 +1,86 @@
+---
+debug: True
+
+# generate a secret key https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+secret_key: ""
+
+# default is generally 127.0.0.1
+internal_ips: "127.0.0.1"
+
+installed_apps:
+  - "monthly_water_reports"
+
+# default is mysql. is set in accountability_tracker/accountability_tracker/settings_production.py
+database:
+  host: "127.0.0.1"
+  port: 3306
+  database: ""
+  username: ""
+  password: ""
+
+# optional if you intend to generate emails from an application
+email:
+  host: ""
+  user: ""
+  password: ""
+  port: 587
+  use_tls: True
+
+cache:
+  host: localhost
+  port: 6379
+  db: 0
+
+data_source:
+
+  # assumes named something like 102915enforcement_statistics.xlsx
+  data_path: ""
+  file_download_path: ""
+  enforcement_file: ""
+  usage_file: ""
+
+# required absolute path to the build & deploy directory for django-bakery and deployment
+build:
+  staging: False
+  staging_prefix: ""
+  live_prefix: "http://projects.scpr.org"
+  deploy_dir: "/applications/monthly-water-use"
+  build_dir: ""
+  views:
+    - "monthly_water_reports.views.InitialIndex"
+    - "monthly_water_reports.views.RegionDetailView"
+    - "monthly_water_reports.views.RegionEmbedView"
+    - "monthly_water_reports.views.ComparisonIndex"
+    - "monthly_water_reports.views.EnforcementIndex"
+    - "monthly_water_reports.views.SupplierDetailView"
+
+# api settings and keys for the application
+api:
+
+  # key to access twitter api
+  twitter:
+    consumer_key: ""
+    consumer_secret: ""
+    access_token: ""
+    access_token_secret: ""
+
+  # key for kpcc's assethost API
+  assethost:
+    token_secret: ""
+
+  # key for the public insight network
+  pin_network:
+    api_key: ""
+
+  instagram:
+    instagram_client_id: ""
+    instagram_client_secret: ""
+
+  # required key for maplight's api: http://maplight.org/us-congress/guide/tools/apis-and-widgets
+  maplight:
+    api_key: ""
+
+  # headers to use for api requests
+  headers:
+    from: "KPCC - Southern California Public Radio (ckeller@scpr.org)"
+    user_agent: "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19"
