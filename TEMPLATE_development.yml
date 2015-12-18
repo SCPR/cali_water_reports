@@ -41,6 +41,7 @@ data_source:
 
 # required absolute path to the build & deploy directory for django-bakery and deployment
 build:
+  bakery_gzip: False
   staging: False
   staging_prefix: ""
   live_prefix: "http://projects.scpr.org"
