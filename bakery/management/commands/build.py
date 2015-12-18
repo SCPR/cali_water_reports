@@ -137,12 +137,15 @@ class Command(BaseCommand):
 
         if os.path.exists(settings.STATIC_ROOT) and settings.STATIC_URL:
             # if gzip isn't enabled, just copy the tree straight over
-
-            logger.debug(settings.STATIC_ROOT)
-
             if getattr(settings, 'BAKERY_GZIP', False):
                 self.copytree_and_gzip(settings.STATIC_ROOT, target_dir)
             else:
+                list_of_static_dirs = os.listdir(settings.STATIC_ROOT)
+                for dir in list_of_static_dirs:
+                    if dir != "monthly_water_reports":
+                        git_rid_of = "%s/%s" % (settings.STATIC_ROOT, dir)
+                        logger.debug("Deleting unneeded %s" % (dir))
+                        shutil.rmtree(git_rid_of)
                 shutil.copytree(settings.STATIC_ROOT, target_dir)
 
         # If they exist in the static directory, copy the robots.txt
