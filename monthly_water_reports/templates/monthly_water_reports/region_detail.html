@@ -1,0 +1,258 @@
+{% extends "monthly_water_reports/base.html" %}
+{% load humanize %}
+{% load staticfiles %}
+{% load monthly_water_reports_template_tags %}
+
+<!-- begin meta -->
+{% block title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
+{% block robots %}{% endblock %}
+{% block description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block keywords %}drought, state water resources control board, california{% endblock %}
+{% block og_title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
+{% block og_site_name %}KPCC{% endblock %}
+{% block og_type %}website{% endblock %}
+{% block og_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
+{% block og_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block twitter_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
+{% block twitter_title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
+{% block twitter_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block facebook_encoded_share_url %}http://projects.scpr.org/static/applications/monthly-water-use{% endblock %}
+{% block twitter_share_text %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
+{% block twitter_encoded_share_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
+<!-- end meta -->
+
+{% block super_css %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block header_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.2/js/select2.min.js"></script>
+
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.js"></script>
+    <!--
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.pager.js"></script>
+    -->
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.multipagefilter.js"></script>
+    <script type="text/javascript">
+        /* For picking out bits from the query string */
+        var getParameterByName = function(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+            var results = regex.exec(window.location.href);
+            if(results == null){
+                return "";
+            } else {
+                return decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+        };
+    </script>
+{% endblock %}
+
+{% block data_details %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div id="content-article">
+            <div class="headlines">
+                <h4 class="kicker">{{ article_content.kicker }}</h4>
+                <h1>{{ article_content.display_headline }}</h1>
+            </div>
+            <div class="about collapse">
+                <p><span class="credits">{{ article_content.display_credits|safe }}</span> | <span class="pubdate">{{ article_content.display_date|safe }}</span></p>
+                {{ article_content.display_text|safe }}
+            </div>
+            <div class="sources collapse">
+                <p>
+                    {% if about_content.sources %}
+                        <strong>Sources</strong>: {{ about_content.sources|safe }}
+                    {% endif %}
+                    {% if about_content.open_source %}
+                        <strong>Built using</strong>: {{ about_content.open_source|safe }}
+                    {% endif %}
+                    {% if about_content.data_download %}
+                        <strong>Download</strong>: {{ about_content.data_download|safe }}
+                    {% endif %}
+                    {% if about_content.github_link %}
+                        View on <a href="{{ about_content.github_link|safe }}" target="_blank">GitHub</a>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="buttons btn-group btn-group-justified">
+                <a class="btn btn-primary" href="javascript:void(0)" data-toggle="collapse" data-target=".about"><span class="about glyphicon glyphicon-chevron-down"></span>  About</a>
+                <a class="btn btn-primary" href="javascript:void(0)" data-toggle="collapse" data-target=".sources"><span class="sources glyphicon glyphicon-chevron-down"></span>  Sources</a>
+                {% if about_content.read_more_link %}
+                    <a class="btn btn-primary" href="{{ about_content.read_more_link }}"><span class="glyphicon glyphicon-link"></span> Read more</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block data_visuals %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% settings_value 'URL_PATH' %}/">Home</a></li>
+                    <li class="active">{{ region_name }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jumbotron">
+            <noscript>Please enable JavaScript to view this interactive.</noscript>
+            <h4 class="text-center">Choose a water supplier</h4>
+            <div id="content-action-bar">
+                <select id="water-supplier-list" class="form-control js-basic-single">
+                    <option>-- Select a {{ map_data.0.hydrologic_region }} agency --</option>
+                    {% for supplier in map_data.0.suppliers %}
+                        <option value="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_name|slugify }}/">{{ supplier.supplier_name|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% include "monthly_water_reports/about_data.html" with current_year=target_report|date:"N Y" last_year=target_report|get_last_year|date:"Y" %}
+
+    {% for report in map_data %}
+        <div class="row">
+            <div class="hidden-xs col-sm-4 col-md-3 col-lg-3 image-map">
+                <img src="{{ STATIC_URL }}monthly_water_reports/images/cal-region-{{ report.hydrologic_region|slugify }}.png" />
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
+                <h3><a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/">{{ report.hydrologic_region }}</a></h3>
+                <p>Daily per capita residential water use {% increase_or_decrease report.last_month_avg report.this_month_avg %} in {{ target_report|date:"N Y" }} to an average of {{ report.this_month_avg|floatformat:2 }} gallons for the {{ report.count }} agencies in the <a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">{{ report.hydrologic_region }}</a> hydrologic region. That number is compared to the {{ target_report|get_last_month|date:"N Y" }} daily per capita residential water use of {{ report.last_month_avg|floatformat:2 }}. <span class="coal-chart-sentence show">Use the chart below to see how the {{ report.count }} agencies in this region performed.</span><span class="data-point-sentence hidden">Here are some statistics for the {{ report.count }} agencies in this region.</span> <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/enforcement-comparison/">Click here</a> to see enforcement statistics for water agencies in this region. <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/reduction-comparison/">Click here</a> to see reduction targets for water agencies in this region. </p>
+
+                <section class="coal-chart-container show">
+
+                    <!--
+                        based on census reporter distribution "circles on a line" charts by Ryan Pitts, Joe Germuska, Ian Dees and Sara Schnadt. example here: http://censusreporter.org/data/distribution/?table=B25064&geo_ids=860|16000US0644000
+
+                        formula to arrive at the circles on a line: https://github.com/censusreporter/censusreporter/blob/47ee559d3939ec00d2e39e1f540b277bc50bbff8/censusreporter/apps/census/static/js/comparisons.js#L703
+
+                        styles to arrive at the circles on a line: https://github.com/censusreporter/censusreporter/blob/47ee559d3939ec00d2e39e1f540b277bc50bbff8/censusreporter/apps/census/static/css/charts.css#L450
+                    -->
+
+                    <ul class="coal-chart">
+                        {% for supplier in report.suppliers %}
+                            <li id="{{ supplier.supplier_name|slugify }}" class="chart-point" style="left: {{ supplier.distribution_precent }}%;">
+                                <span class="point" data-index="{{ supplier.supplier_name|slugify }}">
+                                    <span class="hovercard">
+                                        <span class="text-center"><a class="label-title" href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_name|slugify }}/">{{ supplier.supplier_name|title }}</a></span><br />
+                                        <span class="value text-center">{{ supplier.calculated_rgpcd_2014|floatformat:2 }} <br />residential gallons <br /> used daily per capita</span>
+                                    </span>
+                                </span>
+                            </li>
+                        {% endfor %}
+                        <li class="tick-mark tick-mark-min" style="left: {{ report.min_range }}%;">
+                            <span class="text-center"><b>Min</b> <br /> {{ report.this_min.calculated_rgpcd_2014__min|floatformat:2 }}</span>
+                        </li>
+
+                        <li class="tick-mark tick-mark-median" style="left: {{ report.median_range }}%;">
+                            <span class="text-center"><b>Median</b> <br /> {{ report.median|floatformat:2 }}</span>
+                        </li>
+                        <li class="tick-mark tick-mark-average" style="left: {{ report.average_range }}%;">
+                            <span class="text-center"><b>Average</b> <br /> {{ report.this_month_avg|floatformat:2 }}</span>
+                        </li>
+                        <li class="tick-mark tick-mark-max" style="left: {{ report.max_range }}%;">
+                            <span class="text-center"><b>Max</b> <br /> {{ report.this_max.calculated_rgpcd_2014__max|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <p>In order to achieve a 25 percent reduction in water use statewide, the <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> approved water use reduction targets for each urban water agency in the state.<p>
+            <p>The table below shows the {% for report in map_data %}{{ report.count }}{% endfor %} agencies in the {% for report in map_data %}<a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/">{{ report.hydrologic_region }}</a>{% endfor %} hydrologic region. Of these, <span class='decrease-accent'>{% for report in map_data %}{{ report.achieved_target|length }}{% endfor %} met</span>, <span class='increase-accent'>{% for report in map_data %}{{ report.failed_target|length }}{% endfor %} failed to meet</span> and <span class='eighty-percent-accent'>{% for report in map_data %}{{ report.missed_target|length }}{% endfor %} came within 5 percent</span> of their reduction targets.</p>
+            <p>Progress toward meeting the reduction targets are based on comparing residential water consumption between June 1, 2015 and Feb. 29, 2016 to the same time period beginning in 2013. The percent change is calculated between current use and the 2013 baseline and compared to the reduction target.</p>
+            <div id="table-container">
+                <div id="table_fu">
+                    <div id="controls" class="row">
+                        <div class="filter col-xs-12 col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                            <form class="form-inline" >
+                                <input type="text" class="search form-control" placeholder="Filter list of {{ region_name }} agencies...">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <table id="data" class="kpcc-table tabular table">
+                        <thead>
+                            <tr>
+                                <th style="cursor: pointer;">Water Agency</th>
+                                <!--
+                                <th style="cursor: pointer;">Cumulative Savings</th>
+                                -->
+                                <th class="text-center" style="cursor: pointer;">{{ target_report|date:"N Y" }}<br />gallons</th>
+                                <th class="text-center" style="cursor: pointer;">{{ target_report|get_last_year|date:"N Y" }}<br />gallons</th>
+                                <th class="text-center" style="cursor: pointer;">Change from<br />{{ target_report|get_last_year|date:"N Y" }}</th>
+                                <th class="text-center" style="cursor: pointer;">Reduction Target</th>
+                                <th class="text-center" style="cursor: pointer;">Achieved Target</th>
+                                <th class="text-center" style="cursor: pointer;">Reduction Tier</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in map_data %}
+                                {% for supplier in report.suppliers %}
+                                    <tr>
+                                        <td><mark>Water Agency</mark><a href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_slug }}/">{{ supplier.supplier_name|title }}</a></td>
+
+
+
+                                        <td class="text-center"><mark>{{ target_report|date:"N Y" }} gallons</mark>{{ supplier.gallons_month_2014|millify|safe }}</td>
+                                        {% if supplier.gallons_month_2013 %}
+                                            <td class="text-center"><mark>{{ target_report|get_last_year|date:"N Y" }} gallons</mark>{{ supplier.gallons_month_2013|millify|safe }}</td>
+                                            <td class="text-center"><mark>Change from<br />{{ target_report|get_last_year|date:"N Y" }}</mark>{{ supplier.performance_comparison|safe }}</td>
+                                            <td class="text-center"><mark>Reduction Target</mark>{{ supplier.reduction_target|floatformat:"0" }}%</td>
+                                            <td class="text-center"><mark>Achieved Target</mark>{{ supplier.hit_reduction_target|safe }}</td>
+                                            <td class="text-center"><mark>Reduction Tier</mark>{{ supplier.reduction_tier }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>{{ target_report|get_last_year|date:"N Y" }}</mark>n/a</td>
+                                            <td class="text-center"><mark>Change from<br />{{ target_report|get_last_year|date:"N Y" }}</mark>n/a</td>
+                                            <td class="text-center"><mark>Reduction Target</mark>n/a</td>
+                                            <td class="text-center"><mark>Achieved Target</mark>n/a</td>
+                                            <td class="text-center"><mark>Reduction Tier</mark>n/a</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block config_js %}
+    <script>
+        window.appConfig = {% app_config_object config_object %};
+        window.appConfig.embed_this = true;
+        window.appConfig.project_root = window.appConfig.project_root + "share/{{ region_slug }}";
+    </script>
+{% endblock %}
+
+{% block super_js %}
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/_application.js"></script>
+    <script>
+        var sorting_array = [[3, 0], [0, 0]];
+        var headers_object = {
+            0: {sorter: true},
+            1: {sorter: true},
+            2: {sorter: true},
+            3: {sorter: true},
+            4: {sorter: true},
+            5: {sorter: true},
+            6: {sorter: true}
+        };
+        $(document).ready(function(){
+            fn.enableSelectMenu();
+            fn.enableComparisonCharts();
+            fn.createReductionComparisonTable(sorting_array, headers_object);
+        });
+    </script>
+{% endblock %}
