@@ -1,11 +1,11 @@
 Django Project Template
 =======================
 
-This Django Project Template provides some defaults for new KPCC Django projects. It is based on [django-layout](https://github.com/lincolnloop/django-layout).
+~~~This Django Project Template provides some defaults for new KPCC Django projects. It is based on [django-layout](https://github.com/lincolnloop/django-layout).~~~
 
-To use this template, run the following command:
+~~~To use this template, run the following command:~~~
 
-    django-admin.py startproject --template=https://github.com/chrislkeller/django-layout/zipball/master --extension=py,yml,md,gitignore cali_water_reports
+~~~django-admin.py startproject --template=https://github.com/chrislkeller/django-layout/zipball/master --extension=py,yml,md,gitignore cali_water_reports~~~
 
 Quickstart
 ==========
@@ -20,7 +20,7 @@ Quickstart
 
         cd cali_water_reports
 
-~* Rename ```config.yml.template``` to ```config.yml``` and ```development.yml.template``` to ```development.yml```~
+        ~~~* Rename ```config.yml.template``` to ```config.yml``` and ```development.yml.template``` to ```development.yml```~~~
 
 * Open ```development.yml``` and add the name of your project as the database name on line 17.
 
@@ -31,7 +31,7 @@ Quickstart
           username: "root"
           password: ""
 
-~* Run ```fab makesecret``` and add the ```secret key``` to line 5 in ```development.yml```~
+~~~* Run ```fab makesecret``` and add the ```secret key``` to line 5 in ```development.yml```~~~
 
 * Run ```fab bootstrap```
     * This attempts to scaffold the project by:
@@ -97,11 +97,6 @@ Quickstart
 * Migrate the database to add the application tables
 
         fab migrate
-
-
-
-
-
 
 ----
 
