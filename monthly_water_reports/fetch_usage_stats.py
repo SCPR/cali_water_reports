@@ -245,7 +245,7 @@ class BuildMonthlyWaterUseReport(object):
             if data["supplier_slug"] in self.suppliers_to_skip:
                 pass
             else:
-                obj, created = WaterSupplier.objects.update_or_create(
+                obj, created = WaterSupplier.objects.get_or_create(
                     supplier_slug = data["supplier_slug"],
                     defaults = {
                         "supplier_name": data["supplier_name"],
@@ -277,7 +277,7 @@ class BuildMonthlyWaterUseReport(object):
                 pass
             else:
                 supplier = WaterSupplier.objects.get(supplier_slug = data["supplier_slug"])
-                report, created = supplier.watersuppliermonthlyreport_set.update_or_create(
+                report, created = supplier.watersuppliermonthlyreport_set.get_or_create(
                     reporting_month = data["reporting_month"],
                     report_date = data["report_date"],
                     supplier_name = data["supplier_name"],

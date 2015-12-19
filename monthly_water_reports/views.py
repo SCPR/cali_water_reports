@@ -680,9 +680,6 @@ class SupplierDetailView(BuildableDetailView):
 
         context["target_report"] = latest_month_latest_report[0].reporting_month
 
-
-
-
         # calculate cumulative savings for an agency
         current_usage_list = context["results"].filter(reporting_month__gte = "2015-06-01").values_list("calculated_production_monthly_gallons_month_2014").order_by("calculated_production_monthly_gallons_month_2014")
         baseline_months = [
