@@ -39,7 +39,7 @@ class BuildMonthlyWaterUseReport(object):
         "Stage Invoked",
         "Mandatory Restrictions",
         "Reporting Month",
-        "REPORTED Total Monthly Potable Water Production 2014/2015",
+        "REPORTED Total Monthly Potable Water Production Reporting Month",
         "REPORTED Total Monthly Potable Water Production 2013",
         "REPORTED Units",
         "Qualification",
@@ -48,9 +48,9 @@ class BuildMonthlyWaterUseReport(object):
         "Optional - Enforcement Actions",
         "Optional - Implementation",
         "Optional - REPORTED Recycled Water",
-        "CALCULATED Total Monthly Potable Water Production 2014/2015 Gallons (Values calculated by Water Board staff. REPORTED Total Monthly Potable Water Production 2014/2015 - REPORTED Monthly Ag Use 2014/2015; converted to gallons.)",
+        "CALCULATED Total Monthly Potable Water Production Reporting Month Gallons (Values calculated by Water Board staff. REPORTED Total Monthly Potable Water Production Reporting Month - REPORTED Monthly Ag Use Reporting Month; converted to gallons.)",
         "CALCULATED Total Monthly Potable Water Production 2013 Gallons (Values calculated by Water Board staff. REPORTED Total Monthly Potable Water Production 2013 - REPORTED Monthly Ag Use 2013; converted to gallons.)",
-        "CALCULATED R-GPCD 2014/2015 (Values calculated by Water Board staff using methodology available at http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/ws_tools/guidance_estimate_res_gpcd.pdf)",
+        "CALCULATED R-GPCD Reporting Month (Values calculated by Water Board staff using methodology available at http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/ws_tools/guidance_estimate_res_gpcd.pdf)",
         "% Residential Use",
         "Comments/Corrections",
     ]
@@ -105,6 +105,8 @@ class BuildMonthlyWaterUseReport(object):
 
                 data_to_process["supplier_mwd_member"] = False
 
+                logger.debug(clean_row)
+
                 try:
                     data_to_process["hydrologic_region"] = clean_row["hydrologic_region"]
                     data_to_process["hydrologic_region_slug"] = self.sluggy._can_create_hydrologic_region_slug(clean_row["hydrologic_region"])
@@ -148,10 +150,10 @@ class BuildMonthlyWaterUseReport(object):
                     logger.error(error_output)
                     raise
 
-                reported_prod_2014_15 = clean_row["reported_total_monthly_potable_water_production_2014_2015"]
+                reported_prod_2014_15 = clean_row["reported_total_monthly_potable_water_production_reporting_month"]
                 try:
                     if self.sluggy._can_convert_str_to_num(reported_prod_2014_15)["convert"] == True:
-                        data_to_process["total_monthly_potable_water_production_2014"] = self.sluggy._can_convert_str_to_num(reported_prod_2014_15)["value"]
+                        data_to_process["reported_total_monthly_potable_water_production_reporting_month"] = self.sluggy._can_convert_str_to_num(reported_prod_2014_15)["value"]
                 except Exception, exception:
                     error_output = "%s %s" % (exception, clean_row)
                     logger.error(error_output)
@@ -195,8 +197,8 @@ class BuildMonthlyWaterUseReport(object):
                     raise
 
                 try:
-                    if self.sluggy._can_convert_str_to_num(clean_row["calculated_total_monthly_potable_water_production_2014_2015_gallons"])["convert"] == True:
-                        data_to_process["calculated_production_monthly_gallons_month_2014"] = self.sluggy._can_convert_str_to_num(clean_row["calculated_total_monthly_potable_water_production_2014_2015_gallons"])["value"]
+                    if self.sluggy._can_convert_str_to_num(clean_row["calculated_total_monthly_potable_water_production_reporting_month_gallons"])["convert"] == True:
+                        data_to_process["calculated_total_monthly_potable_water_production_reporting_month_gallons"] = self.sluggy._can_convert_str_to_num(clean_row["calculated_total_monthly_potable_water_production_reporting_month_gallons"])["value"]
                 except Exception, exception:
                     error_output = "%s %s" % (exception, clean_row)
                     logger.error(error_output)
@@ -211,8 +213,8 @@ class BuildMonthlyWaterUseReport(object):
                     raise
 
                 try:
-                    if self.sluggy._can_convert_str_to_num(clean_row["calculated_r-gpcd_2014_2015"])["convert"] == True:
-                        data_to_process["calculated_rgpcd_2014"] = self.sluggy._can_convert_str_to_num(clean_row["calculated_r-gpcd_2014_2015"])["value"]
+                    if self.sluggy._can_convert_str_to_num(clean_row["calculated_r-gpcd_reporting_month"])["convert"] == True:
+                        data_to_process["calculated_r-gpcd_reporting_month"] = self.sluggy._can_convert_str_to_num(clean_row["calculated_r-gpcd_reporting_month"])["value"]
                 except Exception, exception:
                     error_output = "%s %s" % (exception, clean_row)
                     logger.error(error_output)
@@ -286,7 +288,7 @@ class BuildMonthlyWaterUseReport(object):
                         "stage_invoked": data["stage_invoked"],
                         "mandatory_restrictions": data["mandatory_restrictions"],
                         "reporting_month": data["reporting_month"],
-                        "total_monthly_potable_water_production_2014": data["total_monthly_potable_water_production_2014"],
+                        "total_monthly_potable_water_production_2014": data["reported_total_monthly_potable_water_production_reporting_month"],
                         "total_monthly_potable_water_production_2013": data["total_monthly_potable_water_production_2013"],
                         "units": data["units"].upper(),
                         "qualification": data["qualification"],
@@ -296,9 +298,9 @@ class BuildMonthlyWaterUseReport(object):
                         "implementation": data["implementation"],
                         "recycled_water": data["recycled_water"],
                         "recycled_water_units": data["recycled_water_units"],
-                        "calculated_production_monthly_gallons_month_2014": data["calculated_production_monthly_gallons_month_2014"],
+                        "calculated_production_monthly_gallons_month_2014": data["calculated_total_monthly_potable_water_production_reporting_month_gallons"],
                         "calculated_production_monthly_gallons_month_2013": data["calculated_production_monthly_gallons_month_2013"],
-                        "calculated_rgpcd_2014": data["calculated_rgpcd_2014"],
+                        "calculated_rgpcd_2014": data["calculated_r-gpcd_reporting_month"],
                         # "calculated_rgpcd_2013": data["calculated_rgpcd_2013"],
                         "percent_residential_use": data["percent_residential_use"],
                         "comments_or_corrections": data["comments_or_corrections"],
