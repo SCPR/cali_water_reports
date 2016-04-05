@@ -29,13 +29,16 @@ def neg_to_posi(value):
 
 @register.filter
 def get_last_year(value):
-    last_year = value.year-2
+    last_year = value.year - 3
     output = date(last_year, value.month, value.day)
     return output
 
 @register.filter
 def get_last_month(value):
-    last_month = value.month-1
+    if value.month == 1:
+        last_month = 12
+    else:
+        last_month = value.month - 1
     output = date(value.year, last_month, value.day)
     return output
 
