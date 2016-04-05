@@ -26,7 +26,7 @@ class LoadMonthlyEnforcementStats(object):
 
     data_path = settings.DATA_PATH
 
-    excel_file_url = settings.ENFORCEMENT_FILE
+    excel_file_url = settings.USAGE_FILE
 
     file_name = os.path.basename(excel_file_url)
 

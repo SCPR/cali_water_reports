@@ -22,7 +22,7 @@ class TestFetchUsageStats(TestCase):
 
         self.excel_file_urls = [
             {"category": "usage", "file_url": settings.USAGE_FILE},
-            {"category": "enforcement", "file_url": settings.ENFORCEMENT_FILE},
+            {"category": "enforcement", "file_url": settings.USAGE_FILE},
         ]
 
         self.file_name = None
