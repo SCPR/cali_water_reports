@@ -8,7 +8,7 @@ import logging
 import time
 import datetime
 import requests
-from dateutil import parser
+from dateutil.parser import parse
 from collections import OrderedDict
 import sys
 import os.path
@@ -171,7 +171,7 @@ class MonthlyFormattingMethods(object):
         """
         are the keys I expect to be in the file present
         """
-        parsed_date = parser.parse(date)
+        parsed_date = parse(date)
         return parsed_date
 
 

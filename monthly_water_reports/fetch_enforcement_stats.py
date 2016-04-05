@@ -12,7 +12,6 @@ import logging
 import time
 import datetime
 import requests
-from dateutil import parser
 from collections import OrderedDict
 import sys
 import os.path
