@@ -43,19 +43,19 @@ monthly_water_reports functions
 
 def fetch_enforcement_stats():
     """
-    run the cali_water application tests
+    ingest the latest enforcement data from the state water resources board
     """
     local("python manage.py fetch_enforcement_stats")
 
 def fetch_water_use():
     """
-    ingest the latest data from the state water resources board
+    ingest the latest usage data from the state water resources board
     """
     local("python manage.py fetch_usage_stats")
 
 def tasks_water_use():
     """
-    run tasks related to data from the state water resources board
+    run tasks related to managing data from the state water resources board
     """
     local("python manage.py usage_tasks")
 
@@ -111,6 +111,9 @@ def requirements():
     local("pip install -r requirements.txt")
 
 def create_db():
+    """
+    shortcut to create the database for the monthly water numbers project
+    """
     connection = None
     db_config = CONFIG["database"]
     logger.debug("Creating %s database for %s django project" % (db_config["database"], env.project_name))
@@ -140,15 +143,24 @@ def makesecret(length=50, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789!@#
     print 'SECRET_KEY = "%s"' % key
 
 def build():
+    """
+    build the static html pages for the project
+    """
     local("python manage.py build")
 
 def buildserver():
     local("python manage.py buildserver")
 
 def move():
+    """
+    move the static html pages to the public directory
+    """
     local("python manage.py move_baked_files")
 
 def commit(message='updates'):
+    """
+    commit changes in codebase to github repo
+    """
     with lcd(settings.DEPLOY_DIR):
         try:
             message = raw_input("Enter a git commit message:  ")
@@ -158,6 +170,9 @@ def commit(message='updates'):
         local("git push")
 
 def deploy():
+    """
+    deploy the latest codebase
+    """
     data()
     time.sleep(5)
     build()
@@ -167,6 +182,9 @@ def deploy():
     commit()
 
 def bootstrap():
+    """
+    run tasks to setup the base project
+    """
     with prefix("WORKON_HOME=$HOME/.virtualenvs"):
         with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
             local("mkvirtualenv %s" % (env.project_name))
