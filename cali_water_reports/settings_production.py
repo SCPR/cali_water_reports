@@ -180,5 +180,5 @@ if "build" in CONFIG:
 if "data_source" in CONFIG:
     DATA_PATH = CONFIG["data_source"]["data_path"]
     FILE_DOWNLOAD_PATH = CONFIG["data_source"]["file_download_path"]
-    ENFORCEMENT_FILE = CONFIG["data_source"]["enforcement_file"]
+    # ENFORCEMENT_FILE = CONFIG["data_source"]["enforcement_file"]
     USAGE_FILE = CONFIG["data_source"]["usage_file"]
