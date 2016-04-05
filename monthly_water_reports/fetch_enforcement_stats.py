@@ -97,7 +97,7 @@ class LoadMonthlyEnforcementStats(object):
                             "hydrologic_region_slug": self.sluggy._can_create_hydrologic_region_slug(clean_row["hydrologic_region"]),
                             "enforcement_comments": clean_row["enforcement_comments"],
                             "mandatory_restrictions": clean_row["mandatory_restrictions"],
-                            "total_population_served": self.sluggy._can_convert_str_to_num(clean_row["population_served"])["value"],
+                            "total_population_served": self.sluggy._can_convert_str_to_num(clean_row["total_population_served"])["value"],
                             "supplier_id": None,
                             "water_days_allowed_week": self.sluggy._can_convert_str_to_num(clean_row["water_days_allowed_week"])["value"],
                             "complaints_received": self.sluggy._can_convert_str_to_num(clean_row["complaints_received"])["value"],

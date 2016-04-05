@@ -74,7 +74,7 @@ class TestFetchUsageStats(TestCase):
             "Supplier Name",
             "Reporting Month",
             "Hydrologic Region",
-            "Population Served",
+            "Total Population Served",
             "Mandatory Restrictions",
             "Water Days Allowed/Week",
             "Complaints Received",
@@ -161,6 +161,7 @@ class TestFetchUsageStats(TestCase):
 
     def test_a_download_chain(self):
         for item in self.excel_file_urls:
+            logger.debug(item["category"])
             item["file_name"] = os.path.basename(item["file_url"])
             item["file_download_excel_path"] = "%s/%s" % (settings.FILE_DOWNLOAD_PATH, item["file_name"])
             item["file_created_csv_path"] = item["file_download_excel_path"].replace(".xlsx", ".csv")
@@ -214,15 +215,11 @@ class TestFetchUsageStats(TestCase):
         """
         are the keys I expect to be in the file present
         """
-        num_of_expected_keys = len(item["expected_keys"])
         with open(item["file_created_csv_path"], "rb") as csvfile:
             csv_data = csv.DictReader(csvfile, delimiter=',')
-            list_of_downloaded_keys = csv_data.next()
-            num_of_downloaded_keys = len(list_of_downloaded_keys)
-            self.assertTrue(num_of_expected_keys <= num_of_downloaded_keys)
+            downloaded_keys = csv_data.next()
             for key in item["expected_keys"]:
-                self.assertTrue(list_of_downloaded_keys.has_key(key))
-
+                self.assertTrue(downloaded_keys.has_key(key))
 
     def Test_can_make_string_to_datetime(self, item):
         """

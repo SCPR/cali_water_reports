@@ -45,11 +45,10 @@ class MonthlyFormattingMethods(object):
             args = ["-f", "xlsx", file_download_excel_path]
             with open(file_created_csv_path, "w+", buffering=-1) as output_file:
                 utility = In2CSV(args, output_file).main()
-                logger.debug(utility)
-            #     csv_file_exists = os.path.isfile(file_created_csv_path)
-            #     csv_file_size = os.path.getsize(file_created_csv_path)
-            #     if csv_file_exists == True and csv_file_size > 0:
-            #         logger.debug("Success!")
+                csv_file_exists = os.path.isfile(file_created_csv_path)
+                csv_file_size = os.path.getsize(file_created_csv_path)
+                if csv_file_exists == True and csv_file_size > 0:
+                    logger.debug("Success!")
         except Exception, exception:
             logger.error(exception)
             raise
