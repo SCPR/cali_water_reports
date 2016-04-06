@@ -681,8 +681,9 @@ class SupplierDetailView(BuildableDetailView):
         context["target_report"] = latest_month_latest_report[0].reporting_month
 
         # calculate cumulative savings for an agency
-        current_usage_list = context["results"].filter(reporting_month__gte = "2015-06-01").values_list("calculated_production_monthly_gallons_month_2014").order_by("calculated_production_monthly_gallons_month_2014")
-        baseline_months = [
+        current_usage_list = context["results"].filter(reporting_month__gte = "2015-06-01").values_list("calculated_production_monthly_gallons_month_2014", flat=True).order_by("calculated_production_monthly_gallons_month_2014")
+
+        baseline_usage_list = [
             self.object.production_2013_june,
             self.object.production_2013_july,
             self.object.production_2013_aug,
@@ -690,12 +691,11 @@ class SupplierDetailView(BuildableDetailView):
             self.object.production_2013_oct,
             self.object.production_2013_nov,
             self.object.production_2013_dec,
+            self.object.production_2013_jan,
+            self.object.production_2013_feb,
         ]
-        baseline_usage_list = baseline_months[:len(current_usage_list)]
-        #context["cum_savings"] = new_queries.create_cumulative_savings(current_usage_list, baseline_usage_list, self.object.june_11_reduction)
 
-
-
+        context["cumulative_use"] = new_queries.create_cumulative_savings(current_usage_list, baseline_usage_list, self.object.june_11_reduction)
 
         # work on cumulative savings charts
         # context["reduction_labels"] = [
@@ -1014,39 +1014,29 @@ class QueryUtilities(object):
         return output
 
 
-    def create_cumulative_savings(self, queryset_values, baseline_list, reduction):
-
-        logger.debug(queryset_values)
-
-        logger.debug(baseline_list)
-
-        cum_use = sum([item for item, in queryset_values])
-
-        number_of_baselines = len(queryset_values)
-
-        if baseline_list[0] != None:
-            cum_baseline = sum(baseline_list[:number_of_baselines])
-            cum_savings = calculate.percentage_change(cum_baseline, cum_use)
+    def create_cumulative_savings(self, current_usage_list, baseline_usage_list, reduction_target):
+        """
+        calculate how much a water agency has saved over the first go-round of enforcement
+        """
+        if None in baseline_usage_list:
+            logger.debug("stop")
         else:
-            cum_baseline = None
-            cum_savings = None
-
-        cumulative_calcs = {
-            "cum_baseline": cum_baseline,
-            "cum_use": cum_use,
-            "cum_savings": cum_savings,
-            "reduction_target": reduction
-        }
-
-        if cumulative_calcs["cum_savings"] == None:
-            cumulative_calcs["cum_missed_by"] = None
-
-        elif cumulative_calcs["cum_savings"] < 0:
-            cumulative_calcs["cum_missed_by"] = (reduction * 100) - (abs(cumulative_calcs["cum_savings"]))
-
-        else:
-            cumulative_calcs["cum_missed_by"] = (reduction * 100) - cumulative_calcs["cum_savings"]
-
-        logger.debug(cumulative_calcs)
-
-        return cumulative_calcs
+            cum_current = sum(current_usage_list)
+            cum_baseline = sum(baseline_usage_list)
+            cum_percent_change = calculate.percentage_change(cum_baseline, cum_current)
+            reduction_target = format(reduction_target * 100, '.0f')
+            cumulative_calcs = {
+                "cum_baseline": cum_baseline,
+                "cum_current": cum_current,
+                "cum_percent_change": cum_percent_change,
+                "reduction_target": reduction_target
+            }
+            if cumulative_calcs["cum_percent_change"] < 0:
+                cumulative_calcs["cum_status"] = "decreased"
+                cumulative_calcs["cum_savings"] = abs(cumulative_calcs["cum_percent_change"])
+                cumulative_calcs["cum_usage"] = None
+            else:
+                cumulative_calcs["cum_status"] = "increased"
+                cumulative_calcs["cum_savings"] = None
+                cumulative_calcs["cum_usage"] = abs(cumulative_calcs["cum_percent_change"])
+            return cumulative_calcs

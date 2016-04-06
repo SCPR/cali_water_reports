@@ -23,15 +23,18 @@ def currency(dollars):
     dollars = round(int(dollars), 2)
     return "$%s" % (intcomma(int(dollars)))
 
+
 @register.filter
 def neg_to_posi(value):
     return abs(value)
+
 
 @register.filter
 def get_last_year(value):
     last_year = value.year - 3
     output = date(last_year, value.month, value.day)
     return output
+
 
 @register.filter
 def get_last_month(value):
@@ -42,9 +45,11 @@ def get_last_month(value):
     output = date(value.year, last_month, value.day)
     return output
 
+
 @register.filter
 def percentage(value):
     return "%s%%" % (value*100)
+
 
 @register.simple_tag
 def standardize_unit_to_gallons(value, unit):
@@ -60,6 +65,7 @@ def standardize_unit_to_gallons(value, unit):
         output = (value * 1)
     return output
 
+
 @register.simple_tag
 def build_chart_title(data):
     number_of_records = len(data)
@@ -71,6 +77,7 @@ def build_chart_title(data):
     else:
         change_trend = "<span class='decrease-accent'>Decreased</span>"
     return change_trend
+
 
 @register.simple_tag
 def build_chart_sentence(data):
@@ -84,6 +91,7 @@ def build_chart_sentence(data):
         change_trend = "<span class='decrease-accent'>decreased</span>"
     return "Here's a view of average daily per capita residential water use over the past %s months. Water use by this agency's residential customers has %s by %s%%, going from an average of %s gallons used by each resident per day to %s." % (number_of_records, change_trend, round(percent_change, 2), round(oldest_record, 2), round(newest_record, 2))
 
+
 @register.simple_tag
 def increase_or_decrease(old_figure, new_figure):
     percent_change = calculate.percentage_change(old_figure, new_figure)
@@ -92,6 +100,7 @@ def increase_or_decrease(old_figure, new_figure):
     else:
         output = "<span class='decrease-accent'>decreased</span>"
     return output
+
 
 @register.simple_tag
 def title_increase_or_decrease(old_figure, new_figure):
@@ -102,10 +111,12 @@ def title_increase_or_decrease(old_figure, new_figure):
         output = "<span class='decrease-accent'>Decreased</span>"
     return output
 
+
 @register.simple_tag
 def settings_value(name):
     output = getattr(settings, name, "")
     return output
+
 
 @register.simple_tag
 def no_span_increase_or_decrease(old_figure, new_figure):
@@ -115,6 +126,7 @@ def no_span_increase_or_decrease(old_figure, new_figure):
     else:
         output = "decreased"
     return output
+
 
 @register.simple_tag
 def compare_to_avg(state_figure, local_figure):
@@ -127,6 +139,7 @@ def compare_to_avg(state_figure, local_figure):
         output = "<span class='decrease-accent'>less</span>"
     return output
 
+
 @register.simple_tag
 def percent_change(old_figure, new_figure):
     percent_change = calculate.percentage_change(old_figure, new_figure)
@@ -137,6 +150,7 @@ def percent_change(old_figure, new_figure):
         percent_change = "%.2f" % round(percent_change, 2)
         output = "<span class='decrease-accent'>%s%%</span>" % (percent_change)
     return output
+
 
 @register.simple_tag
 def change_in_reduction_tier(latest_proposal, prior_proposal):
@@ -153,6 +167,7 @@ def change_in_reduction_tier(latest_proposal, prior_proposal):
             output = "n/a"
     return output
 
+
 @register.simple_tag
 def met_monthly_target(old_figure, new_figure, reduction_target):
     reduction_target = reduction_target * 100
@@ -160,18 +175,47 @@ def met_monthly_target(old_figure, new_figure, reduction_target):
     if percent_change < 0:
         comparison_value = abs(percent_change)
         if comparison_value >= reduction_target:
-            output = "and the agency <span class='decrease-accent'>achieved </span> <br /> its <span class='decrease-accent'>%s%%</span> reduction target" % (reduction_target)
+            output = "as the agency <span class='decrease-accent'>achieved </span> its <span class='decrease-accent'>%s%%</span> reduction target for the month" % (reduction_target)
         elif comparison_value / reduction_target >= 0.95:
-            output = "but <span class='eighty-percent-accent'>missed </span> meeting <br /> a <span class='eighty-percent-accent'>%s%%</span> reduction target" % (reduction_target)
+            output = "but <span class='eighty-percent-accent'>missed </span> meeting a <span class='eighty-percent-accent'>%s%%</span> reduction target for the month" % (reduction_target)
         else:
-            output = "but the agency <span class='increase-accent'>fell short</span> of meeting <br /> its <span class='increase-accent'>%s%%</span> reduction target" % (reduction_target)
+            output = "but the agency <span class='increase-accent'>fell short</span> of meeting its <span class='increase-accent'>%s%%</span> reduction target for the month" % (reduction_target)
     else:
-        output = "and the agency <span class='increase-accent'>failed</span> to meet <br /> its <span class='increase-accent'>%s%%</span> reduction target" % (reduction_target)
+        output = "as the agency <span class='increase-accent'>failed</span> to meet its <span class='increase-accent'>%s%%</span> reduction target for the month" % (reduction_target)
     return output
+
+
+@register.simple_tag
+def met_conservation_target(agency, cumulative_use):
+
+    # {'cum_savings': 41.63704954581385, 'cum_usage': None, 'reduction_target': 0.16, 'cum_percent_change': -41.63704954581385, 'cum_status': 'decreased', 'cum_current': 617620475.0, 'cum_baseline': 1058240665.0}
+
+    logger.debug(cumulative_use)
+
+    if cumulative_use["cum_status"] == "decreased":
+        output = "The %s <span class='decrease-accent'>achieved </span> <br /> its <span class='decrease-accent'>%s%%</span> conservation reduction target" % (agency, cumulative_use["reduction_target"])
+    else:
+        output = "The %s <span class='increase-accent'>failed to meet </span> <br /> its <span class='increase-accent'>%s%%</span> conservation reduction target" % (agency, cumulative_use["reduction_target"])
+    return output
+
+    # if percent_change < 0:
+    #     comparison_value = abs(percent_change)
+    #     if comparison_value >= reduction_target:
+    #         output = "and the agency <span class='decrease-accent'>achieved </span> <br /> its <span class='decrease-accent'>%s%%</span> reduction target for the month" % (reduction_target)
+    #     elif comparison_value / reduction_target >= 0.95:
+    #         output = "but <span class='eighty-percent-accent'>missed </span> meeting <br /> a <span class='eighty-percent-accent'>%s%%</span> reduction target for the month" % (reduction_target)
+    #     else:
+    #         output = "but the agency <span class='increase-accent'>fell short</span> of meeting its <span class='increase-accent'>%s%%</span> reduction target for the month" % (reduction_target)
+    # else:
+    #     output = "and the agency <span class='increase-accent'>failed</span> to meet <br /> its <span class='increase-accent'>%s%%</span> reduction target for the month" % (reduction_target)
+    # return output
+
+
 
 @register.simple_tag
 def app_config_object(input):
     return json.dumps(input)
+
 
 @register.simple_tag
 def millify(n):
@@ -185,6 +229,7 @@ def millify(n):
     else:
         output = "%.2f<br />%s" % (n/10**(3*millidx),millnames[millidx])
     return "<span>%s</span>" % (output)
+
 
 @register.simple_tag
 def millify_new(n):
@@ -201,8 +246,8 @@ def millify_new(n):
         figure = "%.2f" % (n/10**(3*millidx))
         quantity = "%s" % (millnames[millidx])
     output = "<dt class='text-center water-use-accent'>%s</dt><dd class='text-center'>%s gallons consumed</dd>" % (figure, quantity)
-
     return "%s" % (output)
+
 
 register.filter(currency)
 register.filter(neg_to_posi)
