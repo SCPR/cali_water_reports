@@ -695,7 +695,7 @@ class SupplierDetailView(BuildableDetailView):
             self.object.production_2013_feb,
         ]
 
-        context["cumulative_use"] = new_queries.create_cumulative_savings(current_usage_list, baseline_usage_list, self.object.june_11_reduction)
+        context["cumulative_calcs"] = new_queries.create_cumulative_savings(current_usage_list, baseline_usage_list, self.object.june_11_reduction)
 
         # work on cumulative savings charts
         # context["reduction_labels"] = [
@@ -766,53 +766,6 @@ class SupplierDetailView(BuildableDetailView):
 
 class QueryUtilities(object):
 
-
-    # get me the latest south coast supplier reports
-    #local_supplier_reports = current_data.filter(supplier_name_id__hydrologic_region = "South Coast").extra(select = {"percent_change": "((calculated_rgpcd_2014-calculated_rgpcd_2013)/calculated_rgpcd_2013)*100"})
-
-    # show which agencies increased & decreased residential gallons per capita day
-    #largest_increase = local_supplier_reports.order_by("-percent_change")[:5]
-    #largest_decrease = local_supplier_reports.order_by("percent_change")[:5]
-
-    # misc calculations
-    #http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/emergency_regulations/urban_water_supplier_tiers.pdf
-
-
-    # https://latimes-calculate.readthedocs.org/en/latest/basicfunctions.html#at-percentile
-    # https://latimes-calculate.readthedocs.org/en/latest/basicfunctions.html#percentile
-    # https://latimes-calculate.readthedocs.org/en/latest/basicfunctions.html#ordinal-rank
-
-    # http://www.nytimes.com/interactive/2015/04/01/us/water-use-in-california.html?mabReward=A4&action=click&pgtype=Homepage&region=CColumn&module=Recommendation&src=rechp&WT.nav=RecEngine&_r=2
-    # http://www2.pacinst.org/gpcd/table.html#
-
-    # http://www.waterboards.ca.gov/press_room/press_releases/2015/pr030315_urbanwater.pdf
-
-    #parent_obj = WaterSupplier.objects.values_list("hydrologic_region").distinct()
-
-    #logger.debug(parent_obj)
-
-    #for item in results:
-        #parent_obj = WaterSupplier.objects.get(supplier_name = item.supplier_name_id)
-        #logger.debug(parent_obj.hydrologic_region)
-
-    # determine aggregate change in water production from baseline to latest month in latest report
-    #production_new = results.aggregate(Sum("calculated_production_monthly_gallons_month_2014"))
-    #production_new = int(production_new["calculated_production_monthly_gallons_month_2014__sum"])
-    #production_old = results.aggregate(Sum("calculated_production_monthly_gallons_month_2013"))
-    #production_old = int(production_old["calculated_production_monthly_gallons_month_2013__sum"])
-    #production_change = calculate.percentage_change(production_old, production_new, multiply=True)
-    #logger.debug(production_change)
-
-    # trying to calculate the savings for the current month
-    #test_savings_2014 = current_data.aggregate(Sum("calculated_production_monthly_gallons_month_2014"))
-    #logger.debug(test_savings_2014)
-
-    #test_savings_2013 = current_data.aggregate(Sum("calculated_production_monthly_gallons_month_2013"))
-    #logger.debug(test_savings_2013)
-
-    #test = calculate.percentage_change(test_savings_2013["calculated_production_monthly_gallons_month_2013__sum"], test_savings_2014["calculated_production_monthly_gallons_month_2014__sum"])
-    #print test
-
     def _latest_month_latest_report(self, queryset):
 
         # determine the most recent month from the report
@@ -830,6 +783,7 @@ class QueryUtilities(object):
         # return output
         return output
 
+
     def _all_months_latest_report(self, queryset):
 
         # determine the most recent month from the report
@@ -845,6 +799,7 @@ class QueryUtilities(object):
 
         # return output
         return output
+
 
     def _get_second_draft_conservation_tier(self, conservation_placement):
         if conservation_placement != None:
@@ -883,6 +838,7 @@ class QueryUtilities(object):
         }
         return output
 
+
     def _get_conservation_tier(self, queryset):
         # get the conservation_placement_threshold for an individual agency
         conservation_placement = queryset.filter(reporting_month = "2014-09-01").values("calculated_rgpcd_2014")
@@ -910,6 +866,7 @@ class QueryUtilities(object):
             "conservation_placement": conservation_placement
         }
         return output
+
 
     def _get_rolling_avg_rgcpd(self, queryset):
         residential_population = []
@@ -941,6 +898,7 @@ class QueryUtilities(object):
         output = (res_gallons / total_pop) / days_avg
         return output
 
+
     def _get_avg_rgcpd(self, queryset):
         residential_population = []
         residential_gallons_used = []
@@ -966,6 +924,7 @@ class QueryUtilities(object):
         total_pop = int(sum(residential_population))
         output = (res_gallons / total_pop) / days_in_month[1]
         return output
+
 
     def _get_last_year_avg_rgcpd(self, queryset):
         residential_population = []
@@ -993,14 +952,17 @@ class QueryUtilities(object):
         output = (res_gallons / total_pop) / days_in_month[1]
         return output
 
+
     def calculate_production_threshold(self, reduction, amount):
         reduce_by = amount * reduction
         output = amount - reduce_by
         return output
 
+
     def calculate_values_range(self, min_value, max_value):
         output = max_value - min_value
         return output
+
 
     def pct_value_inside_arbitrary_range(self, starting_value, min_value, max_value):
         """
@@ -1024,19 +986,54 @@ class QueryUtilities(object):
             cum_current = sum(current_usage_list)
             cum_baseline = sum(baseline_usage_list)
             cum_percent_change = calculate.percentage_change(cum_baseline, cum_current)
-            reduction_target = format(reduction_target * 100, '.0f')
+            reduction_target_as_str = format(reduction_target * 100, '.0f')
             cumulative_calcs = {
                 "cum_baseline": cum_baseline,
                 "cum_current": cum_current,
                 "cum_percent_change": cum_percent_change,
+                "reduction_target_as_str": reduction_target_as_str,
                 "reduction_target": reduction_target
             }
+
+            # decreased use
             if cumulative_calcs["cum_percent_change"] < 0:
                 cumulative_calcs["cum_status"] = "decreased"
                 cumulative_calcs["cum_savings"] = abs(cumulative_calcs["cum_percent_change"])
-                cumulative_calcs["cum_usage"] = None
-            else:
+                cumulative_calcs["cum_increase"] = None
+                cumulative_calcs["percent_of_target"] = (cumulative_calcs["cum_savings"] / cumulative_calcs["reduction_target"])
+                cumulative_calcs["points_within_target"] = (cumulative_calcs["cum_savings"] - (cumulative_calcs["reduction_target"]) * 100)
+
+                # met reduction target
+                if cumulative_calcs["percent_of_target"] >= 100:
+                    cumulative_calcs["cum_success"] = True
+                    cumulative_calcs["cum_output"] = "achieving"
+
+                # came close
+                elif cumulative_calcs["percent_of_target"] >= 95:
+                    cumulative_calcs["cum_success"] = False
+                    cumulative_calcs["cum_output"] = "narrowly missed"
+
+                # did not met
+                else:
+                    cumulative_calcs["cum_success"] = False
+                    cumulative_calcs["cum_output"] = "failed to meet"
+
+            # increased use
+            elif cumulative_calcs["cum_percent_change"] > 0:
                 cumulative_calcs["cum_status"] = "increased"
                 cumulative_calcs["cum_savings"] = None
-                cumulative_calcs["cum_usage"] = abs(cumulative_calcs["cum_percent_change"])
+                cumulative_calcs["cum_increase"] = abs(cumulative_calcs["cum_percent_change"])
+                cumulative_calcs["percent_of_target"] = (cumulative_calcs["cum_savings"] / cumulative_calcs["reduction_target"])
+                cumulative_calcs["points_within_target"] = (cumulative_calcs["cum_savings"] - (cumulative_calcs["reduction_target"]) * 100)
+                cumulative_calcs["cum_success"] = False
+                cumulative_calcs["cum_output"] = "increased consumption"
+            # didn't change
+            else:
+                cumulative_calcs["cum_status"] = "remained flat"
+                cumulative_calcs["cum_savings"] = None
+                cumulative_calcs["cum_usage"] = None
+                cumulative_calcs["percent_of_target"] = (cumulative_calcs["cum_savings"] / cumulative_calcs["reduction_target"])
+                cumulative_calcs["points_within_target"] = (cumulative_calcs["cum_savings"] - (cumulative_calcs["reduction_target"]) * 100)
+                cumulative_calcs["cum_success"] = False
+                cumulative_calcs["cum_output"] = "remained flat"
             return cumulative_calcs
