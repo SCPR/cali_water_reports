@@ -139,53 +139,59 @@
         </div>
     </div>
 
-    <!-- begin reduction target -->
+    <!-- begin nine-month reduction target -->
     <div class="row calculated-last-year">
         <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {% met_conservation_target object|title cumulative_calcs %}
-        </div>
-        <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            <dl>
-                {{ cumulative_calcs.cum_current|millify_new|safe }}
-                <dd class="text-center accent-text"> between June 2015 and February 2016.</dd>
-            </dl>
-        </div>
-        <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            <dl>
-                {{ cumulative_calcs.cum_baseline|millify_new|safe }}
-                <dd class="text-center accent-text"> between February and June 2013.</dd>
-            </dl>
-        </div>
-
-        <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h4 class="text-center">Latest monthly water use by the {{ object|title }}</h4>
             {% if results.0.calculated_production_monthly_gallons_month_2014 %}
-                <dl>
-                    <dd>For {{ results.0.reporting_month|date:"N Y" }} &mdash; the latest reporting month &mdash; water consumption in the {{ object|title }} {% increase_or_decrease results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% met_monthly_target results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 final_tier.conservation_standard %}</dd>
-                </dl>
+                {% if cumulative_calcs %}
+                    {% met_conservation_target object|title cumulative_calcs %}
+                    <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <dl>
+                            {{ cumulative_calcs.cum_current|millify_new|safe }}
+                            <dd class="text-center accent-text"> between June 2015 and February 2016.</dd>
+                        </dl>
+                    </div>
+                    <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <dl>
+                            {{ cumulative_calcs.cum_baseline|millify_new|safe }}
+                            <dd class="text-center accent-text"> between February and June 2013.</dd>
+                        </dl>
+                    </div>
+                {% else %}
+                    <h3 class="text-center">Nine-month water use figures for the {{ object|title }} are not available from the State Water Resources Control Board</h3>
+                {% endif %}
             {% else %}
-                <dl>
-                    <dd>Latest water consumption figures for the {{ object|title }} are not available from the State Water Resources Control Board</dd>
-                </dl>
+                <h3 class="text-center">Latest water consumption figures for the {{ object|title }} are not available from the State Water Resources Control Board</h3>
             {% endif %}
         </div>
+    </div>
+    <!-- end nine-month reduction target -->
 
+    <!-- begin monthly reduction target -->
+    <div class="row calculated-last-year">
         {% if results.0.calculated_production_monthly_gallons_month_2014 %}
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">{{ results.0.reporting_month|date:"F" }} water use by the {{ object|title }}</h4>
+                <dl>
+                    <dd>For {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest reporting month &mdash; water consumption in the {{ object|title }} {% increase_or_decrease results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% met_monthly_target results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 final_tier.conservation_standard %}</dd>
+                </dl>
+            </div>
             <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <dl>
                     {{ results.0.calculated_production_monthly_gallons_month_2014|millify_new|safe }}
-                    <dd class="text-center accent-text">in {{ results.0.reporting_month|date:"N Y" }}</dd>
+                    <dd class="text-center accent-text">in {{ results.0.reporting_month|date:"F Y" }}</dd>
                 </dl>
             </div>
             <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <dl>
                     {{ results.0.calculated_production_monthly_gallons_month_2013|millify_new|safe }}
-                    <dd class="text-center accent-text">in {{ results.0.reporting_month|get_last_year|date:"N Y" }}</dd>
+                    <dd class="text-center accent-text">in {{ results.0.reporting_month|get_last_year|date:"F Y" }}</dd>
                 </dl>
             </div>
+        {% else %}
         {% endif %}
     </div>
-    <!-- end reduction target -->
+    <!-- end monthly reduction target -->
 
     <!-- begin reduction progress -->
     {% if results.0.calculated_production_monthly_gallons_month_2014 %}
@@ -222,19 +228,19 @@
                 <h4 class="text-center">Average daily water use of each residential customer</h4>
                 <dl>
                     <dt></dt>
-                    <dd>The <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> also collects a figure that represents the average daily water use of each residential customer for a given water agency. Comparing {{ results.0.reporting_month|date:"N Y" }} &mdash; the latest monthly data available &mdash; to {{ results.1.reporting_month|date:"N Y" }}, average daily per capita residential water use for the {{ object|title }} {% increase_or_decrease results.1.calculated_rgpcd_2014 results.0.calculated_rgpcd_2014 %}.</dd>
+                    <dd>The <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> also collects a figure that represents the average daily water use of each residential customer for a given water agency. Comparing {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest monthly data available &mdash; to {{ results.1.reporting_month|date:"F Y" }}, average daily per capita residential water use for the {{ object|title }} {% increase_or_decrease results.1.calculated_rgpcd_2014 results.0.calculated_rgpcd_2014 %}.</dd>
                 </dl>
             </div>
             <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <dl>
                     <dt class="text-center water-use-accent">{{ results.0.calculated_rgpcd_2014|floatformat:2 }}</dt>
-                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.0.reporting_month|date:"N Y" }}</dd>
+                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.0.reporting_month|date:"F Y" }}</dd>
                 </dl>
             </div>
             <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <dl>
                     <dt class="text-center water-use-accent">{{ results.1.calculated_rgpcd_2014|floatformat:2 }}</dt>
-                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.1.reporting_month|date:"N Y" }}</dd>
+                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.1.reporting_month|date:"F Y" }}</dd>
                 </dl>
             </div>
         </div>
@@ -246,7 +252,7 @@
         <div class="row calculated-last-year">
             <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <dl>
-                    <dd>Residential customers in the {{ object|title }} used <span>{% percent_change latest_state_avg results.0.calculated_rgpcd_2014 %} {% compare_to_avg latest_state_avg results.0.calculated_rgpcd_2014 %}</span> water in {{ results.0.reporting_month|date:"N Y" }} when compared to the statewide average daily per capita residential water use of {{ latest_state_avg|floatformat:2|intcomma }} gallons.</dd>
+                    <dd>Residential customers in the {{ object|title }} used <span>{% percent_change latest_state_avg results.0.calculated_rgpcd_2014 %} {% compare_to_avg latest_state_avg results.0.calculated_rgpcd_2014 %}</span> water in {{ results.0.reporting_month|date:"F Y" }} when compared to the statewide average daily per capita residential water use of {{ latest_state_avg|floatformat:2|intcomma }} gallons.</dd>
                     <dt class="text-center"></dt>
                 </dl>
             </div>
@@ -319,7 +325,7 @@
                         <tbody>
                             {% for supplier in enforcement_stats %}
                                 <tr>
-                                    <td class="text-center"><mark>Month</mark>{{ supplier.reporting_month|date:"N Y" }}</td>
+                                    <td class="text-center"><mark>Month</mark>{{ supplier.reporting_month|date:"F Y" }}</td>
                                     {% if supplier.water_days_allowed_week %}
                                         <td class="text-center"><mark>Watering Days</mark>{{ supplier.water_days_allowed_week|intcomma }}</td>
                                     {% else %}
@@ -385,7 +391,7 @@
                         {% endif %}
                     {% else %}
                     {% endif %}
-                <p class="pubdate small-writing">&ndash; Last updated {{ incentives.0.turf_removal_last_updated|date:"N Y" }}</p>
+                <p class="pubdate small-writing">&ndash; Last updated {{ incentives.0.turf_removal_last_updated|date:"F Y" }}</p>
             </div>
         </div>
     {% endif %}
@@ -405,7 +411,7 @@
                 {% endif %}
                 {% if restrictions.0.restriction_details %}
                     <p>{{ restrictions.0.restriction_details|safe }}</p>
-                    <p class="pubdate small-writing">&ndash; Last updated {{ restrictions.0.restrictions_last_updated|date:"N Y" }}</p>
+                    <p class="pubdate small-writing">&ndash; Last updated {{ restrictions.0.restrictions_last_updated|date:"F Y" }}</p>
                 {% endif %}
             </div>
         </div>

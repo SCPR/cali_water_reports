@@ -981,7 +981,8 @@ class QueryUtilities(object):
         calculate how much a water agency has saved over the first go-round of enforcement
         """
         if None in baseline_usage_list:
-            logger.debug("stop")
+            logger.debug("We lack baseline production figures for this agency")
+            cumulative_calcs = None
         else:
             cum_current = sum(current_usage_list)
             cum_baseline = sum(baseline_usage_list)
@@ -1036,4 +1037,4 @@ class QueryUtilities(object):
                 cumulative_calcs["points_within_target"] = (cumulative_calcs["cum_savings"] - (cumulative_calcs["reduction_target"]) * 100)
                 cumulative_calcs["cum_success"] = False
                 cumulative_calcs["cum_output"] = "remained flat"
-            return cumulative_calcs
+        return cumulative_calcs

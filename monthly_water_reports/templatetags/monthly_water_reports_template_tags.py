@@ -188,31 +188,31 @@ def met_monthly_target(old_figure, new_figure, reduction_target):
 @register.simple_tag
 def met_conservation_target(agency, cumulative_calcs):
     if cumulative_calcs["cum_success"] == True:
-        output = "<h2 class='text-center'>"
+        output = "<h3 class='text-center'>"
         output += "%s water use <span class='decrease-accent'>%s</span>, <span class='decrease-accent'>%s</span> at least a %s%% reduction over nine months" % (agency, cumulative_calcs["cum_status"], cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
-        output += "</h2>"
+        output += "</h3>"
         output += "<dl><dd>Between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; the %s <span class='decrease-accent'>%s</span> water consumption by <span class='decrease-accent'>%s percent,</span> beating its %s percent reduction target by <span class='decrease-accent'>%s percentage points</span>.</dd></dl>" % (agency, cumulative_calcs["cum_status"], "%.2f" % cumulative_calcs["cum_savings"], cumulative_calcs["reduction_target_as_str"], "%.2f" % cumulative_calcs["points_within_target"])
     elif cumulative_calcs["cum_success"] == False:
         if cumulative_calcs["cum_savings"] == None:
-            output = "<h2 class='text-center'>"
+            output = "<h3 class='text-center'>"
             output += "The %s <span class='increase-accent'>%s</span> its water consumption and missed its <span class='increase-accent'>%s%%</span> conservation reduction target" % (agency, cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
-            output += "</h2>"
+            output += "</h3>"
             output += "<dl><dd>Between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; the %s <span class='increase-accent'>%s</span> water consumption by <span class='increase-accent'>%s percent,</span> and missed its %s percent reduction target by <span class='increase-accent'>%s percentage points</span>.</dd></dl>" % (agency, cumulative_calcs["cum_status"], "%.2f" % cumulative_calcs["cum_savings"], cumulative_calcs["reduction_target_as_str"], "%.2f" % abs(cumulative_calcs["points_within_target"]))
         elif cumulative_calcs["percent_of_target"] >= 95:
-            output = "<h2 class='text-center'>"
+            output = "<h3 class='text-center'>"
             output += "%s water use <span class='decrease-accent'>%s</span> but <span class='eighty-percent-accent'>%s</span> a %s%% reduction over nine months" % (agency, cumulative_calcs["cum_status"], cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
-            output += "</h2>"
+            output += "</h3>"
             output += "<dl><dd>Between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; the %s <span class='decrease-accent'>%s</span> water consumption by <span class='decrease-accent'>%s percent,</span> but missed its %s percent reduction target by <span class='eighty-percent-accent'>%s percentage points</span>.</dd></dl>" % (agency, cumulative_calcs["cum_status"], "%.2f" % cumulative_calcs["cum_savings"], cumulative_calcs["reduction_target_as_str"], "%.2f" % abs(cumulative_calcs["points_within_target"]))
         else:
-            output = "<h2 class='text-center'>"
+            output = "<h3 class='text-center'>"
             output += "%s water use <span class='decrease-accent'>%s</span> but <span class='increase-accent'>%s</span> a %s%% reduction over nine months" % (agency, cumulative_calcs["cum_status"], cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
 
-            output += "</h2>"
+            output += "</h3>"
             output += "<dl><dd>Between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; the %s <span class='decrease-accent'>%s</span> water consumption by <span class='decrease-accent'>%s percent,</span> but missed its %s percent reduction target by <span class='decrease-accent'>%s percentage points</span>.</dd></dl>" % (agency, cumulative_calcs["cum_status"], "%.2f" % cumulative_calcs["cum_savings"], cumulative_calcs["reduction_target_as_str"], "%.2f" % abs(cumulative_calcs["points_within_target"]))
     else:
-        output = "<h2 class='text-center'>"
+        output = "<h3 class='text-center'>"
         output += "%s water use %s and did not meet a %s%% reduction over nine months" % (agency, cumulative_calcs["cum_status"], cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
-        output += "</h2>"
+        output += "</h3>"
         output += "<dl><dd>Between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; the %s's water consumption %s and missed its %s percent reduction target.</dd></dl>" % (agency, cumulative_calcs["cum_status"], cumulative_calcs["reduction_target_as_str"])
     return output
 
