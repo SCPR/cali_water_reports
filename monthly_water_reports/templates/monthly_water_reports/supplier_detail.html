@@ -140,6 +140,7 @@
     </div>
 
     <!-- begin nine-month reduction target -->
+    <!--
     <div class="row calculated-last-year">
         <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
             {% if results.0.calculated_production_monthly_gallons_month_2014 %}
@@ -165,6 +166,7 @@
             {% endif %}
         </div>
     </div>
+    -->
     <!-- end nine-month reduction target -->
 
     <!-- begin monthly reduction target -->
@@ -173,7 +175,7 @@
             <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <h4 class="text-center">{{ results.0.reporting_month|date:"F" }} water use by the {{ object|title }}</h4>
                 <dl>
-                    <dd>For {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest reporting month &mdash; water consumption in the {{ object|title }} {% increase_or_decrease results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% met_monthly_target results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 final_tier.conservation_standard %}</dd>
+                    <dd>For {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest reporting month &mdash; water consumption in the {{ object|title }} {% increase_or_decrease results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %}{% comment %} {% met_monthly_target results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 final_tier.conservation_standard %}{% endcomment %} compared to the 2013 baseline month.</dd>
                 </dl>
             </div>
             <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">

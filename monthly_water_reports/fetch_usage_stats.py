@@ -103,7 +103,7 @@ class BuildMonthlyWaterUseReport(object):
 
                 data_to_process["supplier_url"] = None
 
-                data_to_process["supplier_mwd_member"] = False
+                data_to_process["supplier_active"] = True
 
                 logger.debug(clean_row)
 
@@ -252,7 +252,7 @@ class BuildMonthlyWaterUseReport(object):
                     defaults = {
                         "supplier_name": data["supplier_name"],
                         "supplier_url": data["supplier_url"],
-                        "supplier_mwd_member": data["supplier_mwd_member"],
+                        "supplier_active": data["supplier_active"],
                         "hydrologic_region": data["hydrologic_region"],
                         "hydrologic_region_slug": data["hydrologic_region_slug"],
                         "created_date": data["created_date"],

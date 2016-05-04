@@ -6,16 +6,16 @@
 <!-- begin meta -->
 {% block title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
 {% block robots %}{% endblock %}
-{% block description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"F Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"F Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
 {% block keywords %}drought, state water resources control board, california{% endblock %}
 {% block og_title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
 {% block og_site_name %}KPCC{% endblock %}
 {% block og_type %}website{% endblock %}
 {% block og_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
-{% block og_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block og_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"F Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"F Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
 {% block twitter_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
 {% block twitter_title %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
-{% block twitter_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"N Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"N Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
+{% block twitter_description %}{{ map_data.0.hydrologic_region }} residential customers {% no_span_increase_or_decrease map_data.0.this_month_baseline_avg map_data.0.this_month_avg %} daily water use in {{ target_report|date:"F Y" }} to an average of {{ map_data.0.this_month_avg|floatformat:2 }} gallons in the {{ report.hydrologic_region }} hydrologic region compared to {{ target_report|get_last_year|date:"F Y" }}. Based on data from {{ map_data.0.count }} agencies, the distribution chart below shows how each performed in terms of daily per person residential use rate.{% endblock %}
 {% block facebook_encoded_share_url %}http://projects.scpr.org/static/applications/monthly-water-use{% endblock %}
 {% block twitter_share_text %}Water use in California's {{ map_data.0.hydrologic_region }} hydrologic region{% endblock %}
 {% block twitter_encoded_share_url %}http://projects.scpr.org/static/applications/monthly-water-use/region/{{ region_slug }}{% endblock %}
@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    {% include "monthly_water_reports/about_data.html" with current_year=target_report|date:"N Y" last_year=target_report|get_last_year|date:"Y" %}
+    {% include "monthly_water_reports/about_data.html" with current_year=target_report|date:"F Y" last_year=target_report|get_last_year|date:"Y" %}
 
     {% for report in map_data %}
         <div class="row">
@@ -122,7 +122,7 @@
             </div>
             <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
                 <h3><a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/">{{ report.hydrologic_region }}</a></h3>
-                <p>Daily per capita residential water use {% increase_or_decrease report.last_month_avg report.this_month_avg %} in {{ target_report|date:"N Y" }} to an average of {{ report.this_month_avg|floatformat:2 }} gallons for the {{ report.count }} agencies in the <a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">{{ report.hydrologic_region }}</a> hydrologic region. That number is compared to the {{ target_report|get_last_month|date:"N Y" }} daily per capita residential water use of {{ report.last_month_avg|floatformat:2 }}. <span class="coal-chart-sentence show">Use the chart below to see how the {{ report.count }} agencies in this region performed.</span><span class="data-point-sentence hidden">Here are some statistics for the {{ report.count }} agencies in this region.</span> <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/enforcement-comparison/">Click here</a> to see enforcement statistics for water agencies in this region. <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/reduction-comparison/">Click here</a> to see reduction targets for water agencies in this region. </p>
+                <p>Daily per capita residential water use {% increase_or_decrease report.last_month_avg report.this_month_avg %} in {{ target_report|date:"F Y" }} to an average of {{ report.this_month_avg|floatformat:2 }} gallons for the {{ report.count }} agencies in the <a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">{{ report.hydrologic_region }}</a> hydrologic region. That number is compared to the {{ target_report|get_last_month|date:"F Y" }} daily per capita residential water use of {{ report.last_month_avg|floatformat:2 }}. <span class="coal-chart-sentence show">Use the chart below to see how the {{ report.count }} agencies in this region performed.</span><span class="data-point-sentence hidden">Here are some statistics for the {{ report.count }} agencies in this region.</span> <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/enforcement-comparison/">Click here</a> to see enforcement statistics for water agencies in this region. <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/reduction-comparison/">Click here</a> to see reduction targets for water agencies in this region. </p>
 
                 <section class="coal-chart-container show">
 
@@ -136,7 +136,7 @@
 
                     <ul class="coal-chart">
                         {% for supplier in report.suppliers %}
-                            <li id="{{ supplier.supplier_name|slugify }}" class="chart-point" style="left: {{ supplier.distribution_precent }}%;">
+                            <li id="{{ supplier.supplier_name|slugify }}" class="chart-point" style="left: {{ supplier.distribution_percent }}%;">
                                 <span class="point" data-index="{{ supplier.supplier_name|slugify }}">
                                     <span class="hovercard">
                                         <span class="text-center"><a class="label-title" href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_name|slugify }}/">{{ supplier.supplier_name|title }}</a></span><br />
@@ -164,11 +164,12 @@
         </div>
     {% endfor %}
 
+    <!--
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <p>In order to achieve a 25 percent reduction in water use statewide, the <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> approved water use reduction targets for each urban water agency in the state.<p>
-            <p>The table below shows the {% for report in map_data %}{{ report.count }}{% endfor %} agencies in the {% for report in map_data %}<a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/">{{ report.hydrologic_region }}</a>{% endfor %} hydrologic region. Of these, <span class='decrease-accent'>{% for report in map_data %}{{ report.achieved_target|length }}{% endfor %} met</span>, <span class='increase-accent'>{% for report in map_data %}{{ report.failed_target|length }}{% endfor %} failed to meet</span> and <span class='eighty-percent-accent'>{% for report in map_data %}{{ report.missed_target|length }}{% endfor %} came within 5 percent</span> of their reduction targets.</p>
-            <p>Progress toward meeting the reduction targets are based on comparing residential water consumption between June 1, 2015 and Feb. 29, 2016 to the same time period beginning in 2013. The percent change is calculated between current use and the 2013 baseline and compared to the reduction target.</p>
+            <p>Progress toward meeting the initial reduction targets was based on comparing residential water consumption between June 1, 2015 and Feb. 29, 2016 to the same time period beginning in 2013. The percent change is calculated between current use and the 2013 baseline and compared to the reduction target.</p>
+            <p>The table below shows that of the {% for report in map_data %}{{ report.count }}{% endfor %} agencies in the {% for report in map_data %}<a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/">{{ report.hydrologic_region }}</a>{% endfor %} hydrologic region, <span class='decrease-accent'>{% for report in map_data %}{{ report.achieved_target|length }}{% endfor %} met</span>, <span class='increase-accent'>{% for report in map_data %}{{ report.failed_target|length }}{% endfor %} failed to meet</span> and <span class='eighty-percent-accent'>{% for report in map_data %}{{ report.missed_target|length }}{% endfor %} came within 5 percent</span> of their targets during the initial nine-month enforcement period.</p>
             <div id="table-container">
                 <div id="table_fu">
                     <div id="controls" class="row">
@@ -183,42 +184,22 @@
                         <thead>
                             <tr>
                                 <th style="cursor: pointer;">Water Agency</th>
-                                <!--
-                                <th style="cursor: pointer;">Cumulative Savings</th>
-                                -->
-                                <th class="text-center" style="cursor: pointer;">{{ target_report|date:"N Y" }}<br />gallons</th>
-                                <th class="text-center" style="cursor: pointer;">{{ target_report|get_last_year|date:"N Y" }}<br />gallons</th>
-                                <th class="text-center" style="cursor: pointer;">Change from<br />{{ target_report|get_last_year|date:"N Y" }}</th>
                                 <th class="text-center" style="cursor: pointer;">Reduction Target</th>
+                                <th class="text-center" style="cursor: pointer;">Savings Over <br />{{ target_report|get_last_year|date:"Y" }}</th>
                                 <th class="text-center" style="cursor: pointer;">Achieved Target</th>
-                                <th class="text-center" style="cursor: pointer;">Reduction Tier</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for report in map_data %}
-                                {% for supplier in report.suppliers %}
-                                    <tr>
-                                        <td><mark>Water Agency</mark><a href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_slug }}/">{{ supplier.supplier_name|title }}</a></td>
-
-
-
-                                        <td class="text-center"><mark>{{ target_report|date:"N Y" }} gallons</mark>{{ supplier.gallons_month_2014|millify|safe }}</td>
-                                        {% if supplier.gallons_month_2013 %}
-                                            <td class="text-center"><mark>{{ target_report|get_last_year|date:"N Y" }} gallons</mark>{{ supplier.gallons_month_2013|millify|safe }}</td>
-                                            <td class="text-center"><mark>Change from<br />{{ target_report|get_last_year|date:"N Y" }}</mark>{{ supplier.performance_comparison|safe }}</td>
-                                            <td class="text-center"><mark>Reduction Target</mark>{{ supplier.reduction_target|floatformat:"0" }}%</td>
-                                            <td class="text-center"><mark>Achieved Target</mark>{{ supplier.hit_reduction_target|safe }}</td>
-                                            <td class="text-center"><mark>Reduction Tier</mark>{{ supplier.reduction_tier }}</td>
-                                        {% else %}
-                                            <td class="text-center"><mark>{{ target_report|get_last_year|date:"N Y" }}</mark>n/a</td>
-                                            <td class="text-center"><mark>Change from<br />{{ target_report|get_last_year|date:"N Y" }}</mark>n/a</td>
-                                            <td class="text-center"><mark>Reduction Target</mark>n/a</td>
-                                            <td class="text-center"><mark>Achieved Target</mark>n/a</td>
-                                            <td class="text-center"><mark>Reduction Tier</mark>n/a</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
+                        {% for report in map_data %}
+                            {% for supplier in report.suppliers %}
+                                <tr>
+                                    <td><mark>Water Agency</mark><a href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_slug }}/">{{ supplier.supplier_name|title }}</a></td>
+                                    <td class="text-center"><mark>Reduction Target</mark>{{ supplier.cum_data.reduction_target_as_str }}%</td>
+                                    <td class="text-center"><mark>Savings From <br />{{ target_report|get_last_year|date:"Y" }}</mark>{{ supplier.cum_data.cum_percent_change|floatformat:"0" }}%</td>
+                                    <td><mark>Achieved Target</mark>{{ supplier.cum_data.cum_html|safe }}</td>
+                                </tr>
                             {% endfor %}
+                        {% endfor %}
                         </tbody>
                         <tfoot></tfoot>
                     </table>
@@ -226,6 +207,7 @@
             </div>
         </div>
     </div>
+    -->
 {% endblock %}
 
 {% block config_js %}
@@ -239,15 +221,12 @@
 {% block super_js %}
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/_application.js"></script>
     <script>
-        var sorting_array = [[3, 0], [0, 0]];
+        var sorting_array = [[2, 1], [0, 0]];
         var headers_object = {
             0: {sorter: true},
             1: {sorter: true},
             2: {sorter: true},
             3: {sorter: true},
-            4: {sorter: true},
-            5: {sorter: true},
-            6: {sorter: true}
         };
         $(document).ready(function(){
             fn.enableSelectMenu();

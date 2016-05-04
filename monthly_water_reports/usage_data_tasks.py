@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Avg, Max, Min, Sum, Count
 from monthly_water_reports.models import WaterSupplier, WaterSupplierMonthlyReport, WaterEnforcementMonthlyReport
 from monthly_water_reports.views import QueryUtilities
-from monthly_water_reports.usage_data_fetch import BuildMonthlyWaterUseReport
+from fetch_methods import MonthlyFormattingMethods
 import csv
 from csvkit.utilities.in2csv import In2CSV
 import re
@@ -17,60 +17,120 @@ from collections import OrderedDict
 import sys
 import os.path
 
-logger = logging.getLogger("monthly_water_reports")
+logger = logging.getLogger("cali_water_reports")
 
 class TasksForMonthlyWaterUseReport(object):
 
+    sluggy = MonthlyFormattingMethods()
+
+    csv_file = "/Users/ckeller/Desktop/supplier_compliance_040416.csv"
+
     def _init(self, *args, **kwargs):
+        # self.model_second_round_reductions(self.csv_file)
+        # self.model_cum_savings(self.csv_file)
+        self.model_supplier_reached_target()
+
+    def model_second_round_reductions(self, target_csv_file):
+        with open(target_csv_file, "rb") as csvfile:
+            csv_data = csv.DictReader(csvfile, delimiter=',')
+            for row in csv_data:
+                clean_row = {re.sub(r"\([^)]*\)", "", k).strip().replace("- ", "").replace(" ", "_").replace("/", "_").lower(): v.strip() for k, v in row.iteritems()}
+                supplier = self.sluggy._can_prettify_and_slugify_string(clean_row["supplier_name"])
+                clean_row["supplier_name"] = supplier["supplier_name"]
+                clean_row["supplier_slug"] = supplier["supplier_slug"]
+                float_value = self.sluggy._can_convert_str_to_num(clean_row["new_conservation_standard"])
+                clean_row["float_conservation_standard"] = float_value["value"]
+                supplier = WaterSupplier.objects.filter(supplier_slug=supplier["supplier_slug"])
+                for item in supplier:
+                    try:
+                        item.march_1_reduction = clean_row["float_conservation_standard"]
+                        item.save()
+                    except Exception, exception:
+                        error_output = "%s %s" % (exception, clean_row["supplier_slug"])
+                        logger.error(error_output)
+                        raise
+
+    def model_cum_savings(self, target_csv_file):
+        with open(target_csv_file, "rb") as csvfile:
+            csv_data = csv.DictReader(csvfile, delimiter=',')
+            for row in csv_data:
+                clean_row = {re.sub(r"\([^)]*\)", "", k).strip().replace("- ", "").replace(" ", "_").replace("/", "_").lower(): v.strip() for k, v in row.iteritems()}
+                supplier = self.sluggy._can_prettify_and_slugify_string(clean_row["supplier_name"])
+                clean_row["supplier_name"] = supplier["supplier_name"]
+                clean_row["supplier_slug"] = supplier["supplier_slug"]
+                clean_row["missed_reduction_target_by"] = float(clean_row["missed_reduction_target_by"])
+                clean_row["cumulative_percent_saved"] = float(clean_row["cumulative_percent_saved"])
+                supplier = WaterSupplier.objects.filter(supplier_slug=supplier["supplier_slug"])
+                for item in supplier:
+                    try:
+                        item.cumulative_percent_saved  = clean_row["cumulative_percent_saved"]
+                        item.missed_reduction_target_by = clean_row["missed_reduction_target_by"]
+                        item.compliance_priority = clean_row["compliance_priority"]
+                        item.category_definition = clean_row["category_definition"]
+                        item.save()
+                    except Exception, exception:
+                        error_output = "%s %s" % (exception, clean_row["supplier_slug"])
+                        logger.error(error_output)
+                        raise
+
+
+    def model_supplier_reached_target(self):
         """
-        begin the process of downloading the latest state water control board usage report
         """
-        #logger.debug("Choose a function to run")
-
-        self.model_monthly_enforcement_stats("/Users/ckeller/Desktop/2015_10_30_enforcement_statistics.csv")
-
-        #self.add_hydrologic_region_to_watersuppliermonthlyreport()
-        #self.add_hydrologic_region_slug_to_watersuppliermonthlyreport()
-        #self.add_supplier_slug_to_watersuppliermonthlyreport
-        #self.fix_dates_on_reports()
-        #self.model_first_and_second_reduction_proposals()
-        #self.model_third_reduction_proposals("/Users/ckeller/Desktop/third_proposal_5-4-15.csv")
-        #self.model_june_5_reduction_proposals("/Users/ckeller/Desktop/fourth_proposal_6-5-15.csv")
-        #self.model_june_11_reduction_proposals("/Users/ckeller/Desktop/final_proposal_6-11-15.csv")
-        #self.add_monthly_production_stats_to_water_supplier()
-
-    def add_monthly_production_stats_to_water_supplier(self):
-        queryset = WaterSupplier.objects.all()
-        for item in queryset:
-
-            logger.debug(item.supplier_slug)
-
-            production_numbers_list = []
-
-            latest_month_reports = WaterSupplierMonthlyReport.objects.filter(report_date = "2015-07-01").filter(supplier_slug = item.supplier_slug).order_by("reporting_month")
-
-            for report in latest_month_reports:
-                data_dict = {}
-                data_dict["month"] = report.reporting_month.month
-                data_dict["prod_gallons"] = report.calculated_production_monthly_gallons_month_2013
-                production_numbers_list.append(data_dict)
-
-            logger.debug(production_numbers_list)
-
-            if production_numbers_list != None:
-                item.production_2013_june = self.return_prod_gallons(production_numbers_list, 6)
-                item.production_2013_july = self.return_prod_gallons(production_numbers_list, 7)
-                item.production_2013_aug = self.return_prod_gallons(production_numbers_list, 8)
-                item.production_2013_sept = self.return_prod_gallons(production_numbers_list, 9)
-                item.production_2013_oct = self.return_prod_gallons(production_numbers_list, 10)
-                item.production_2013_nov = self.return_prod_gallons(production_numbers_list, 11)
-                item.production_2013_dec = self.return_prod_gallons(production_numbers_list, 12)
-                item.production_2013_jan = self.return_prod_gallons(production_numbers_list, 1)
-                item.production_2013_feb = self.return_prod_gallons(production_numbers_list, 2)
-                item.save()
-            else:
-                logger.debug("Something is wrong")
+        suppliers = WaterSupplier.objects.all()
+        for supplier in suppliers:
+            try:
+                if supplier.missed_reduction_target_by == None:
+                    supplier.reached_initial_reduction_target = False
+                elif supplier.missed_reduction_target_by > 0:
+                    supplier.reached_initial_reduction_target = False
+                elif supplier.missed_reduction_target_by < 0:
+                        supplier.reached_initial_reduction_target = True
+                else:
+                    supplier.reached_initial_reduction_target = False
+                supplier.save()
+            except Exception, exception:
+                error_output = "%s %s" % (exception, supplier.supplier_slug)
+                logger.error(error_output)
                 raise
+
+
+    """
+    OLD AND OBSOLTETE FUNCTIONS
+    """
+    def add_monthly_production_stats_to_water_supplier(self):
+            queryset = WaterSupplier.objects.all()
+            for item in queryset:
+
+                logger.debug(item.supplier_slug)
+
+                production_numbers_list = []
+
+                latest_month_reports = WaterSupplierMonthlyReport.objects.filter(report_date = "2015-07-01").filter(supplier_slug = item.supplier_slug).order_by("reporting_month")
+
+                for report in latest_month_reports:
+                    data_dict = {}
+                    data_dict["month"] = report.reporting_month.month
+                    data_dict["prod_gallons"] = report.calculated_production_monthly_gallons_month_2013
+                    production_numbers_list.append(data_dict)
+
+                logger.debug(production_numbers_list)
+
+                if production_numbers_list != None:
+                    item.production_2013_june = self.return_prod_gallons(production_numbers_list, 6)
+                    item.production_2013_july = self.return_prod_gallons(production_numbers_list, 7)
+                    item.production_2013_aug = self.return_prod_gallons(production_numbers_list, 8)
+                    item.production_2013_sept = self.return_prod_gallons(production_numbers_list, 9)
+                    item.production_2013_oct = self.return_prod_gallons(production_numbers_list, 10)
+                    item.production_2013_nov = self.return_prod_gallons(production_numbers_list, 11)
+                    item.production_2013_dec = self.return_prod_gallons(production_numbers_list, 12)
+                    item.production_2013_jan = self.return_prod_gallons(production_numbers_list, 1)
+                    item.production_2013_feb = self.return_prod_gallons(production_numbers_list, 2)
+                    item.save()
+                else:
+                    logger.debug("Something is wrong")
+                    raise
+
 
     def return_prod_gallons(self, list, month):
         match = next((l for l in list if l["month"] == month), None)
@@ -79,6 +139,7 @@ class TasksForMonthlyWaterUseReport(object):
         else:
             output = None
         return output
+
 
     def add_hydrologic_region_to_watersuppliermonthlyreport(self):
         queryset = WaterSupplierMonthlyReport.objects.all()
@@ -91,6 +152,7 @@ class TasksForMonthlyWaterUseReport(object):
             else:
                 logger.debug("Everything's cool!")
 
+
     def add_hydrologic_region_slug_to_watersuppliermonthlyreport(self):
         queryset = WaterSupplierMonthlyReport.objects.all()
         for item in queryset:
@@ -102,6 +164,7 @@ class TasksForMonthlyWaterUseReport(object):
             else:
                 logger.debug("Everything's cool!")
 
+
     def add_supplier_slug_to_watersuppliermonthlyreport(self):
         queryset = WaterSupplierMonthlyReport.objects.all()
         for item in queryset:
@@ -112,6 +175,7 @@ class TasksForMonthlyWaterUseReport(object):
             else:
                 logger.debug("Everything's cool!")
 
+
     def fix_dates_on_reports(self):
         queryset = WaterSupplierMonthlyReport.objects.filter(report_date = "2015-04-07")
         for item in queryset:
@@ -119,6 +183,7 @@ class TasksForMonthlyWaterUseReport(object):
             item.reporting_month = output
             logger.debug(item.reporting_month)
             item.save()
+
 
     def model_first_and_second_reduction_proposals(self):
         suppliers = WaterSupplier.objects.all()
@@ -142,6 +207,7 @@ class TasksForMonthlyWaterUseReport(object):
             supplier.april_18_rgpcd = april_18_tier["conservation_placement"]
             supplier.save()
 
+
     def model_third_reduction_proposals(self, created_csv_file):
         sluggy = BuildMonthlyWaterUseReport()
         with open(created_csv_file, "rb") as csvfile:
@@ -158,6 +224,7 @@ class TasksForMonthlyWaterUseReport(object):
                         item.april_28_reduction = as_decimal
                         item.april_28_rgpcd = row["jul_sep_2014_rgpcd"]
                         item.save()
+
 
     def model_june_5_reduction_proposals(self, created_csv_file):
         sluggy = BuildMonthlyWaterUseReport()
@@ -188,6 +255,7 @@ class TasksForMonthlyWaterUseReport(object):
                             error_output = "%s %s" % (exception, row["jul_sep_2014_rgpcd"])
                             logger.error(error_output)
                             raise
+
 
     def model_june_11_reduction_proposals(self, created_csv_file):
         sluggy = BuildMonthlyWaterUseReport()
@@ -220,6 +288,7 @@ class TasksForMonthlyWaterUseReport(object):
                             error_output = "%s %s" % (exception, row["jul_sep_2014_rgpcd"])
                             logger.error(error_output)
                             raise
+
 
     def model_monthly_enforcement_stats(self, created_csv_file):
 
@@ -306,6 +375,7 @@ class TasksForMonthlyWaterUseReport(object):
         else:
             print "ISSUE WITH COLUMN HEADERS: I can not process %s" % (created_csv_file)
 
+
     def _int_a_string(self, string):
         string = string.strip()
         string = string.replace(",", "")
@@ -318,10 +388,12 @@ class TasksForMonthlyWaterUseReport(object):
         except Exception, exception:
             print "%s - %s" % (exception, string)
 
+
     def _slug_a_string(self, string):
         value = string.encode("ascii", "ignore").lower().strip().replace(" ", "-")
         value = re.sub(r"[^\w-]", "", value)
         return value
+
 
 if __name__ == '__main__':
     task_run = TasksForMonthlyWaterUseReport()

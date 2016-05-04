@@ -161,7 +161,7 @@ class TestFetchUsageStats(TestCase):
 
     def test_a_download_chain(self):
         for item in self.excel_file_urls:
-            logger.debug(item["category"])
+            logger.debug("Processing %s" % (item["category"]))
             item["file_name"] = os.path.basename(item["file_url"])
             item["file_download_excel_path"] = "%s/%s" % (settings.FILE_DOWNLOAD_PATH, item["file_name"])
             item["file_created_csv_path"] = item["file_download_excel_path"].replace(".xlsx", ".csv")
@@ -180,6 +180,7 @@ class TestFetchUsageStats(TestCase):
         """
         test if able to download report from url
         """
+        logger.debug("test if able to download report from url")
         response = requests.get(item["file_url"], headers=settings.REQUEST_HEADERS)
         self.assertEquals(response.status_code, 200)
         self.assertIsNotNone(response.content)
@@ -189,6 +190,7 @@ class TestFetchUsageStats(TestCase):
         """
         test can I write an excel file from url
         """
+        logger.debug("test can I write an excel file from url")
         response = requests.get(item["file_url"], headers=settings.REQUEST_HEADERS)
         with open(item["file_download_excel_path"], "w+", buffering=-1) as output_file:
             output_file.write(response.content)
@@ -202,6 +204,7 @@ class TestFetchUsageStats(TestCase):
         """
         can I make an excel file out of this
         """
+        logger.debug("can I make an excel file out of this")
         args = ["-f", "xlsx", item["file_download_excel_path"]]
         with open(item["file_created_csv_path"], "w+", buffering=-1) as output_file:
             utility = In2CSV(args, output_file).main()
@@ -215,6 +218,7 @@ class TestFetchUsageStats(TestCase):
         """
         are the keys I expect to be in the file present
         """
+        logger.debug("are the keys I expect to be in the file present")
         with open(item["file_created_csv_path"], "rb") as csvfile:
             csv_data = csv.DictReader(csvfile, delimiter=',')
             downloaded_keys = csv_data.next()
@@ -223,8 +227,9 @@ class TestFetchUsageStats(TestCase):
 
     def Test_can_make_string_to_datetime(self, item):
         """
-        are the keys I expect to be in the file present
+        can i make a string into a datetime object
         """
+        logger.debug("can i make a string into a datetime object")
         with open(item["file_created_csv_path"], "rb") as csvfile:
             csv_data = csv.DictReader(csvfile, delimiter=',')
             for row in csv_data:
