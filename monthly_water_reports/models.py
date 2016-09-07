@@ -52,6 +52,7 @@ class WaterSupplier(models.Model):
     production_2013_dec = models.FloatField(null=True, blank=True)
     production_2013_jan = models.FloatField(null=True, blank=True)
     production_2013_feb = models.FloatField(null=True, blank=True)
+    stress_test_conservation_standard = models.FloatField("stress_test_conservation_standard", null=True, blank=True)
 
     def __unicode__(self):
         return self.supplier_name

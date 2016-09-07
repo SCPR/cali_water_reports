@@ -12,6 +12,7 @@ from django.views.generic import View, ListView, DetailView
 from django.db.models import Q, Avg, Max, Min, Sum, Count
 from monthly_water_reports.models import WaterSupplier, WaterSupplierMonthlyReport, WaterEnforcementMonthlyReport, WaterIncentive, WaterRestriction, WaterConservationMethod, HydrologicRegion
 from bakery.views import BuildableListView, BuildableDetailView
+import json
 import os
 import calculate
 import datetime
@@ -438,6 +439,9 @@ class ComparisonIndex(BuildableDetailView):
 
     def get_context_data(self, **kwargs):
 
+        # create instance of query class
+        q = QueryUtilities()
+
         # grab the yaml configuration items
         config = yaml.load(open("monthly_water_reports/display_config.yml"))
 
@@ -462,6 +466,14 @@ class ComparisonIndex(BuildableDetailView):
         # get all of the water suppliers
         context["water_suppliers"] = WaterSupplier.objects.all().filter(hydrologic_region = context["region_name"]).order_by("hydrologic_region", "supplier_name")
 
+        for supplier in context["water_suppliers"]:
+            supplier.reports = WaterSupplierMonthlyReport.objects.filter(supplier_slug=supplier.supplier_slug).order_by("-reporting_month")
+            if supplier.reports:
+                supplier.latest_month = supplier.reports[0]
+                supplier.this_month = supplier.latest_month.reporting_month.month
+                supplier.same_month = supplier.reports.filter(reporting_month__month=supplier.this_month).order_by("-reporting_month")
+                supplier.range_of_years = [2013, 2015, 2016]
+                supplier.month_comparison_data = q._month_comparison_data(supplier.range_of_years, supplier.same_month.order_by("reporting_month"))
         return context
 
 
@@ -521,7 +533,6 @@ class EnforcementIndex(BuildableDetailView):
 
         # get all the reports
         queryset = WaterEnforcementMonthlyReport.objects.filter(hydrologic_region = context["region_name"]).order_by("hydrologic_region", "supplier_name")
-
         context["water_suppliers"] = queryset.values("supplier_name", "hydrologic_region") \
             .annotate(sum_complaints_received = Sum("complaints_received")) \
             .annotate(sum_follow_up_actions = Sum("follow_up_actions")) \
@@ -529,16 +540,13 @@ class EnforcementIndex(BuildableDetailView):
             .annotate(sum_penalties_assessed = Sum("penalties_assessed")) \
             .annotate(reporting_month_min = Min("reporting_month")) \
             .annotate(reporting_month_max = Max("reporting_month"))
-
         return context
 
 
 class SupplierDetailView(BuildableDetailView):
 
     model = WaterSupplier
-
     template_name = "monthly_water_reports/supplier_detail.html"
-
     slug_field = "supplier_slug"
 
     def get_object(self):
@@ -563,6 +571,9 @@ class SupplierDetailView(BuildableDetailView):
 
     def get_context_data(self, **kwargs):
 
+        # create instance of query class
+        q = QueryUtilities()
+
         # grab the yaml configuration items
         config = yaml.load(open("monthly_water_reports/display_config.yml"))
 
@@ -578,96 +589,161 @@ class SupplierDetailView(BuildableDetailView):
         # add the javascript config to the context
         context["config_object"] = config["config_object"]
 
-        # get the supplier slug
-        context["slug"] = self.object.supplier_slug
+        # get reports for this district
+        context["reports"] = WaterSupplierMonthlyReport.objects.filter(supplier_slug=self.object.supplier_slug).order_by("-reporting_month")
+        context["latest_month"] = context["reports"][0]
+        context["last_month"] = context["reports"][1]
+        context["this_month"] = context["latest_month"].reporting_month.month
+        context["same_month"] = context["reports"].filter(reporting_month__month=context["this_month"]).order_by("-reporting_month")
+        context["range_of_years"] = q._range_of_years(context["same_month"])
+        context["month_comparison_data"] = q._month_comparison_data(context["range_of_years"], context["same_month"].order_by("reporting_month"))
+        context["month_comparison_length"] = len(context["range_of_years"])
+        context["yearly_comparison_data"] = q._new_yearly_data(context["range_of_years"], context["reports"])
+        context["enforcement_stats"] = WaterEnforcementMonthlyReport.objects.filter(supplier_slug=self.object.supplier_slug).order_by("-reporting_month")
+        # context["april_7_tier"] = {
+        #     "conservation_standard": self.object.april_7_reduction,
+        #     "conservation_placement": self.object.april_7_rgpcd,
+        #     "conservation_tier": self.object.april_7_tier,
+        # }
 
-        # get all the reports
-        queryset = WaterSupplierMonthlyReport.objects.all()
+        # context["april_18_tier"] = {
+        #     "conservation_standard": self.object.april_18_reduction,
+        #     "conservation_placement": self.object.april_18_rgpcd,
+        #     "conservation_tier": self.object.april_18_tier,
+        # }
 
-        # create instance of query class
-        new_queries = QueryUtilities()
+        # context["april_28_tier"] = {
+        #     "conservation_standard": self.object.april_28_reduction,
+        #     "conservation_placement": self.object.april_28_rgpcd,
+        #     "conservation_tier": self.object.april_28_tier,
+        # }
 
-        # get queryset of the latest month from the most recent report
-        latest_month_latest_report = new_queries._latest_month_latest_report(queryset)
-
-        # calculate & return the state average rgcpd for the current month
-        context["latest_state_avg"] = new_queries._get_avg_rgcpd(latest_month_latest_report)
-
-        # get & return queryset of all the months from the most recent report
-        all_months_latest_report = new_queries._all_months_latest_report(queryset)
-
-        context["results"] = all_months_latest_report.filter(supplier_name_id = self.object)
-
-        context["april_7_tier"] = {
-            "conservation_standard": self.object.april_7_reduction,
-            "conservation_placement": self.object.april_7_rgpcd,
-            "conservation_tier": self.object.april_7_tier,
-        }
-
-        context["april_18_tier"] = {
-            "conservation_standard": self.object.april_18_reduction,
-            "conservation_placement": self.object.april_18_rgpcd,
-            "conservation_tier": self.object.april_18_tier,
-        }
-
-        context["april_28_tier"] = {
-            "conservation_standard": self.object.april_28_reduction,
-            "conservation_placement": self.object.april_28_rgpcd,
-            "conservation_tier": self.object.april_28_tier,
-        }
-
-        context["final_tier"] = {
-            "conservation_standard": self.object.june_11_reduction,
-            "conservation_placement": self.object.june_11_rgpcd,
-            "conservation_tier": self.object.june_11_tier,
-            "conservation_savings": self.object.june_11_estimated_savings,
-        }
-
-        # return the restrictions if present
-        context["restrictions"] = WaterRestriction.objects.filter(supplier_name_id = self.object)
-
-        # return the incentives if present
-        context["incentives"] = WaterIncentive.objects.filter(supplier_name_id = self.object)
-
-        # return the conservation_methods if present
+        # context["final_tier"] = {
+        #     "conservation_standard": self.object.june_11_reduction,
+        #     "conservation_placement": self.object.june_11_rgpcd,
+        #     "conservation_tier": self.object.june_11_tier,
+        #     "conservation_savings": self.object.june_11_estimated_savings,
+        # }
+        reduction_period = context["reports"].filter(reporting_month__gte="2015-06-01").filter(reporting_month__lte="2016-05-30").order_by("reporting_month")
+        baseline_usage = reduction_period.values_list("calculated_production_monthly_gallons_month_2013", flat=True)
+        current_usage = reduction_period.values_list("calculated_production_monthly_gallons_month_2014", flat=True)
+        context["cumulative_calcs"] = q._create_cumulative_savings(current_usage, baseline_usage, self.object.june_11_reduction, self.object.supplier_slug)
+        # context["restrictions"] = WaterRestriction.objects.filter(supplier_name_id = self.object)
+        # context["incentives"] = WaterIncentive.objects.filter(supplier_name_id=self.object)
         context["conservation_methods"] = WaterConservationMethod.objects.all().order_by("?")[:4]
-
-        context["target_report"] = latest_month_latest_report[0].reporting_month
-
-        # calculate cumulative savings for an agency
-        current_usage_list = context["results"].filter(reporting_month__gte = "2015-06-01").values_list("calculated_production_monthly_gallons_month_2014", flat=True).order_by("calculated_production_monthly_gallons_month_2014")
-
-        baseline_usage_list = [
-            self.object.production_2013_june,
-            self.object.production_2013_july,
-            self.object.production_2013_aug,
-            self.object.production_2013_sept,
-            self.object.production_2013_oct,
-            self.object.production_2013_nov,
-            self.object.production_2013_dec,
-            self.object.production_2013_jan,
-            self.object.production_2013_feb,
-        ]
-
-        # context["cumulative_calcs"] = new_queries._create_cumulative_savings(current_usage_list, baseline_usage_list, self.object.june_11_reduction, self.object.supplier_slug)
-
-        # create the lists needed for the rgpcd charts
-        context["labels"] = []
-        context["data_2014"] = []
-        context["data_2013"] = []
-
-        for result in context["results"]:
-            month_label = result.reporting_month.strftime("%b %Y")
-            context["labels"].append(month_label)
-            context["data_2014"].append(result.calculated_rgpcd_2014)
-            context["data_2013"].append(result.calculated_rgpcd_2013)
-
-        context["enforcement_stats"] = WaterEnforcementMonthlyReport.objects.filter(supplier_name = self.object).order_by("-reporting_month")
-
-        # return the context
         return context
 
+
 class QueryUtilities(object):
+
+    def _millify(self, n):
+        millnames=["","thousand","million","billion","trillion"]
+        n = float(n)
+        millidx=max(0,min(len(millnames)-1, int(math.floor(math.log10(abs(n))/3))))
+        if millnames[millidx] == "billion":
+            figure = n/10**(2*millidx)
+        elif millnames[millidx] == "million":
+            figure = n/10**(3*millidx)
+        else:
+            figure = n/10**(3*millidx)
+        return figure
+
+    def _range_of_years(self, queryset):
+        """
+        """
+        list_of_years = []
+        newest_year = queryset.aggregate(Max("reporting_month"))["reporting_month__max"].year
+        earliest_year = queryset.aggregate(Min("reporting_month"))["reporting_month__min"].year
+        list_of_years.append(earliest_year)
+        list_of_years.append(newest_year)
+        start, end = list_of_years[0]-1, list_of_years[-1]
+        output = sorted(set(range(start, end + 1)))
+        return output
+
+    def _get_the_max(self, queryset):
+        this_max = []
+        _2013 = queryset.aggregate(Max("calculated_production_monthly_gallons_month_2013"))
+        _2014 = queryset.aggregate(Max("calculated_production_monthly_gallons_month_2014"))
+        this_max.append(self._millify(_2013["calculated_production_monthly_gallons_month_2013__max"]))
+        this_max.append(self._millify(_2014["calculated_production_monthly_gallons_month_2014__max"]))
+        this_max = max(this_max)
+        return this_max
+
+    def _month_comparison_data(self, year_range, queryset):
+        """
+        """
+        output = []
+        this_max = self._get_the_max(queryset)
+        for year in year_range:
+            data_dict = {}
+            data_dict["year"] = year
+            if year == 2013:
+                data_dict["use"] = self._millify(queryset.first().calculated_production_monthly_gallons_month_2013)
+            else:
+                this = queryset.filter(reporting_month__year=year)
+                if this:
+                    data_dict["use"] = self._millify(this.first().calculated_production_monthly_gallons_month_2014)
+                else:
+                    data_dict["use"] = 0
+            data_dict["percent"] = (data_dict["use"] / this_max) * 100
+            output.append(data_dict)
+        return output
+
+    def _new_yearly_data(self, year_range, queryset):
+        output = []
+        year_range = [2013, 2015, 2016]
+        month_range = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        this_max = self._get_the_max(queryset)
+        for month in month_range:
+            this_dict = {}
+            values = queryset.filter(reporting_month__month=month).order_by("-reporting_month")
+            this_dict["month"] = datetime.date(1900, month, 1).strftime("%B")
+            this_dict["data"] = []
+            for year in year_range:
+                data_dict = {}
+                data_dict["year"] = year
+                if year == 2013:
+                    data_dict["use"] = self._millify(values.first().calculated_production_monthly_gallons_month_2013)
+                else:
+                    this = values.filter(reporting_month__year=year)
+                    if this:
+                        data_dict["use"] = self._millify(this.first().calculated_production_monthly_gallons_month_2014)
+                    else:
+                        data_dict["use"] = 0
+                data_dict["percent"] = (data_dict["use"] / this_max) * 100
+                this_dict["data"].append(data_dict)
+            output.append(this_dict)
+        return output
+
+    # def _yearly_comparison_data(self, range, queryset):
+    #     month_range = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    #     output = []
+    #     for year in range:
+    #         this_dict = {}
+    #         if year == 2013:
+    #             values = queryset.filter(reporting_month__year=2015)
+    #             this_dict["year"] = year
+    #             this_dict["data"] = []
+    #             for month in month_range:
+    #                 this_month = values.filter(reporting_month__month=month)
+    #                 if this_month:
+    #                     this_use = self._millify(this_month.first().calculated_production_monthly_gallons_month_2013)
+    #                 else:
+    #                     this_use = None
+    #                 this_dict["data"].append(this_use)
+    #         else:
+    #             values = queryset.filter(reporting_month__year=year)
+    #             this_dict["year"] = year
+    #             this_dict["data"] = []
+    #             for month in month_range:
+    #                 this_month = values.filter(reporting_month__month=month)
+    #                 if this_month:
+    #                     this_use = self._millify(this_month.first().calculated_production_monthly_gallons_month_2014)
+    #                 else:
+    #                     this_use = None
+    #                 this_dict["data"].append(this_use)
+    #         output.append(this_dict)
+    #     return json.dumps(output)
 
     def _latest_month_latest_report(self, queryset):
         """
@@ -679,6 +755,13 @@ class QueryUtilities(object):
         output = queryset.filter(report_date = latest_report_date["report_date__max"]).filter(reporting_month__gte = target_report)
         return output
 
+    def _last_month_latest_report(self, queryset):
+        """
+        """
+        latest_month = self._latest_month(queryset)
+        logger.debug(latest_month-1)
+        output = queryset.filter(reporting_month__month=5).order_by("-reporting_month")
+        return output
 
     def _all_months_latest_report(self, queryset):
         """
@@ -689,7 +772,6 @@ class QueryUtilities(object):
         target_report = datetime.date(latest_data["reporting_month__max"].year, latest_data["reporting_month__max"].month, latest_data["reporting_month__max"].day)
         output = queryset.filter(report_date = latest_report_date["report_date__max"]).order_by("-reporting_month")
         return output
-
 
     def _get_avg_rgcpd(self, queryset):
         """
@@ -832,7 +914,4 @@ class QueryUtilities(object):
                 cumulative_calcs["cum_success"] = False
                 cumulative_calcs["cum_output"] = "remained flat"
                 cumulative_calcs["cum_html"] = "<span style='color: red';>&#x2718;</span>"
-
-            # print "%s - %s" % (cumulative_calcs["supplier_slug"], format(cumulative_calcs["cum_savings"], '.2f'))
-
         return cumulative_calcs

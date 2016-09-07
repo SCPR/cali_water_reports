@@ -5,6 +5,7 @@
 
 <!-- begin meta -->
 {% block title %}{{ object|title }} monthly water use data{% endblock %}
+
 {% block robots %}{% endblock %}
 
 {% block description %}
@@ -15,7 +16,7 @@
     {% endif %}
 {% endblock %}
 
-{% block keywords %}drought, state water resources control board, california{% endblock %}
+{% block keywords %}{{ object|title }}, {{ object.hydrologic_region }} hydrological region, drought, state water resources control board, california, water conservation, california drought{% endblock %}
 {% block og_title %}{{ object|title }} monthly water use data{% endblock %}
 {% block og_site_name %}KPCC{% endblock %}
 {% block og_type %}website{% endblock %}
@@ -62,16 +63,17 @@
 
     <style type="text/css">
         #table-container {
-            /*background: #ffffff;*/
             padding: 20px 10px 20px 10px;
             font-family: "proxima-nova", "helvetica neue", helvetica, arial, sans-serif;
         }
     </style>
-
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/chartist.min.js"></script>
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.js"></script>
+
     <!--
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.pager.js"></script>
     -->
+
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.multipagefilter.js"></script>
     <script type="text/javascript">
         /* For picking out bits from the query string */
@@ -128,313 +130,332 @@
 {% endblock %}
 
 {% block data_visuals %}
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <ol class="breadcrumb">
-                <li><a href="{% settings_value 'URL_PATH' %}/">Home</a></li>
-                <li><a href="{% settings_value 'URL_PATH' %}/region/{{ results.0.hydrologic_region|slugify }}/">{{ results.0.hydrologic_region }}</a></li>
-                <li class="active">{{ object|title }}</li>
-            </ol>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% settings_value 'URL_PATH' %}/">Home</a></li>
+                    <li><a href="{% settings_value 'URL_PATH' %}/region/{{ object.hydrologic_region_slug }}/">{{ object.hydrologic_region }}</a></li>
+                    <li class="active">{{ object|title }}</li>
+                </ol>
+            </div>
         </div>
-    </div>
 
-    <!-- begin nine-month reduction target -->
-    <!--
-    <div class="row calculated-last-year">
-        <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {% if results.0.calculated_production_monthly_gallons_month_2014 %}
+        <!-- begin compare month to same month last year -->
+        <div class="row calculated-last-year">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">{{ latest_month.reporting_month|date:"F" }} monthly water use by the {{ object|title }}</h4>
+                <dl>
+                    <dd class="text-center">Water consumption in the {{ object|title }} <u>{% increase_or_decrease same_month.1.calculated_production_monthly_gallons_month_2014 same_month.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change same_month.1.calculated_production_monthly_gallons_month_2014 same_month.0.calculated_production_monthly_gallons_month_2014 %}</u> in {{ same_month.0.reporting_month|date:"F Y" }} compared to {{ same_month.1.reporting_month|date:"F Y" }}. Overall, consumption in {{ same_month.0.reporting_month|date:"F" }} has <u>{% increase_or_decrease same_month.0.calculated_production_monthly_gallons_month_2013 same_month.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change same_month.0.calculated_production_monthly_gallons_month_2013 same_month.0.calculated_production_monthly_gallons_month_2014 %}</u> over the past {{ month_comparison_length|apnumber }} years.</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="monthlist">
+                    {% for month in month_comparison_data %}
+                        <li class="_{{ month.year }}">
+                            <span class="data-label">{{ same_month.0.reporting_month|date:"F" }} {{ month.year }}</span>
+                            <span class="index" style="width: {{ month.percent }}%">
+                                <span class="figure">{{ month.use|floatformat:0 }} million gallons</span>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p class="text-center"><em>Displayed in millions of gallons</em></p>
+            </div>
+        </div>
+        <!-- end compare month to same month last year -->
+
+        <!-- begin compare calculated_rgpcd -->
+        <div class="row">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">Average daily water consumption by each residential customer</h4>
+                <dl>
+                    <dt></dt>
+                    <dd>About {{ same_month.0.percent_residential_use|percentage }} of water consumption in the {{ object|title }} is residential. The average daily gallons used by each residential customer <u>{% increase_or_decrease same_month.1.calculated_rgpcd_2014 same_month.0.calculated_rgpcd_2014 %} {% percent_change same_month.1.calculated_rgpcd_2014 same_month.0.calculated_rgpcd_2014 %}</u>  in {{ same_month.0.reporting_month|date:"F Y" }} compared to {{ same_month.1.reporting_month|date:"F Y" }}, according to the <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a>.</dd>
+                </dl>
+            </div>
+            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <dl>
+                    <dt class="text-center water-use-accent">{{ same_month.0.calculated_rgpcd_2014|floatformat:2 }}</dt>
+                    <dd class="text-center">average daily gallons <br /> used by each residential <br /> customer for {{ same_month.0.reporting_month|date:"F Y" }}</dd>
+                </dl>
+            </div>
+            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <dl>
+                    <dt class="text-center water-use-accent">{{ same_month.1.calculated_rgpcd_2014|floatformat:2 }}</dt>
+                    <dd class="text-center">average daily gallons <br /> used by each residential <br /> customer for {{ same_month.1.reporting_month|date:"F Y" }}</dd>
+                </dl>
+            </div>
+        </div>
+        <!-- end compare calculated_rgpcd -->
+
+        <!-- begin compare year over year -->
+        <div class="row">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">Year-over-year water consumption</h4>
+                <!--
+                <dl>
+                    <dd class="text-center">{% comment %}{% build_chart_sentence data_2014 %}{% endcomment %}</dd>
+                </dl>
+                -->
+            </div>
+        </div>
+        <div class="row chart">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {% for month in yearly_comparison_data %}
+                    <span class="yearlist-data-label">{{ month.month }}</span>
+                    <ul class="yearlist">
+                        {% for item in month.data %}
+                            {% if item.percent == 0.0 %}
+                                <li class="_no-data">
+                                    <span class="data-label"><em>{{ item.year }} data not yet available</em></span>
+                                </li>
+                            {% else %}
+                                <li class="_{{ item.year }}">
+                                    <span class="data-label">{{ item.year }}</span>
+                                    <span class="index" style="width: {{ item.percent }}%">
+                                        <span class="figure">{{ item.use|floatformat:0 }} million gallons</span>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+                <p class="text-center"><em>Displayed in millions of gallons</em><br />
+                <em>2014 water use data is incomplete and therefore not displayed</em></p>
+            </div>
+        </div>
+        <!-- end compare year over year -->
+
+        <!-- begin nine-month reduction target -->
+        <div class="row calculated-last-year">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">Progress toward mandatory water reduction*</h4>
                 {% if cumulative_calcs %}
                     {% met_conservation_target object|title cumulative_calcs %}
+                    <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <dl>
+                            {{ cumulative_calcs.cum_baseline|millify_new|safe }}
+                            <dd class="text-center accent-text"> over the same months in 2013.</dd>
+                        </dl>
+                    </div>
                     <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <dl>
                             {{ cumulative_calcs.cum_current|millify_new|safe }}
                             <dd class="text-center accent-text"> between June 2015 and February 2016.</dd>
                         </dl>
                     </div>
+                {% else %}
                     <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <dl>
-                            {{ cumulative_calcs.cum_baseline|millify_new|safe }}
-                            <dd class="text-center accent-text"> between February and June 2013.</dd>
+                            <dd class="text-center accent-text">Nine-month water use figures for the {{ object|title }} are not available.</dd>
                         </dl>
                     </div>
-                {% else %}
-                    <h3 class="text-center">Nine-month water use figures for the {{ object|title }} are not available from the State Water Resources Control Board</h3>
                 {% endif %}
-            {% else %}
-                <h3 class="text-center">Latest water consumption figures for the {{ object|title }} are not available from the State Water Resources Control Board</h3>
-            {% endif %}
+                <p class="lead"><strong>*</strong>: Approved by the State Water Resources Control Board in 2015, the reduction target was meant to achieve a 25 percent reduction in water use statewide. It is tied to an <a href="{% settings_value 'URL_PATH' %}/region/{{ results.0.hydrologic_region|slugify }}/reduction-comparison/">average July through Sept. 2014 daily per capita residential water use rate of</a> {{ final_tier.conservation_placement|floatformat:2|intcomma }} gallons that places water agencies into <a href="http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/supplier_tiers.pdf">nine tiers</a>.</p>
+            </div>
         </div>
-    </div>
-    -->
-    <!-- end nine-month reduction target -->
 
-    <!-- begin monthly reduction target -->
-    <div class="row calculated-last-year">
-        {% if results.0.calculated_production_monthly_gallons_month_2014 %}
-            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h4 class="text-center">{{ results.0.reporting_month|date:"F" }} water use by the {{ object|title }}</h4>
-                <dl>
-                    <dd>For {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest reporting month &mdash; water consumption in the {{ object|title }} {% increase_or_decrease results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %} {% percent_change results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 %}{% comment %} {% met_monthly_target results.0.calculated_production_monthly_gallons_month_2013 results.0.calculated_production_monthly_gallons_month_2014 final_tier.conservation_standard %}{% endcomment %} compared to the 2013 baseline month.</dd>
-                </dl>
-            </div>
-            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <dl>
-                    {{ results.0.calculated_production_monthly_gallons_month_2014|millify_new|safe }}
-                    <dd class="text-center accent-text">in {{ results.0.reporting_month|date:"F Y" }}</dd>
-                </dl>
-            </div>
-            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <dl>
-                    {{ results.0.calculated_production_monthly_gallons_month_2013|millify_new|safe }}
-                    <dd class="text-center accent-text">in {{ results.0.reporting_month|get_last_year|date:"F Y" }}</dd>
-                </dl>
-            </div>
-        {% else %}
-        {% endif %}
-    </div>
-    <!-- end monthly reduction target -->
-
-    <!-- begin reduction progress -->
-    {% if results.0.calculated_production_monthly_gallons_month_2014 %}
+        <!--
         <div class="row chart">
             <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <dl>
-                    <dd>The water use reduction target &mdash; approved by the State Water Resources Control Board this year in order to achieve a 25 percent reduction in water use statewide &mdash; is based on a June 11 revision tied to an <a href="{% settings_value 'URL_PATH' %}/region/{{ results.0.hydrologic_region|slugify }}/reduction-comparison/">average July through Sept. 2014 daily per capita residential water use rate of</a> {{ final_tier.conservation_placement|floatformat:2|intcomma }} gallons that places water agencies into <a href="http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/supplier_tiers.pdf">nine tiers of reduction targets</a>.</dd>
-                </dl>
-
-                <!--
-                <div id="chart-legend-bar" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="block-container">
-                        <span class="block current-use"></span><mark>Current Use</mark>
-                    </div>
-                    <div class="block-container">
-                        <span class="block threshold-use"></span><mark>Reduction Threshold</mark>
-                    </div>
-                    <div class="block-container">
-                        <span class="block baseline-use"></span><mark>Baseline Use</mark>
-                    </div>
-                </div>
-                <div id="reduction-progress" class="ct-chart ct-double-octave"></div>
-                -->
-
-            </div>
-        </div>
-    {% endif %}
-    <!-- end reduction progress -->
-
-    <!-- begin compare calculated_rgpcd -->
-    {% if results.0.calculated_production_monthly_gallons_month_2014 %}
-        <div class="row calculated-last-year">
-            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h4 class="text-center">Average daily water use of each residential customer</h4>
-                <dl>
-                    <dt></dt>
-                    <dd>The <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> also collects a figure that represents the average daily water use of each residential customer for a given water agency. Comparing {{ results.0.reporting_month|date:"F Y" }} &mdash; the latest monthly data available &mdash; to {{ results.1.reporting_month|date:"F Y" }}, average daily per capita residential water use for the {{ object|title }} {% increase_or_decrease results.1.calculated_rgpcd_2014 results.0.calculated_rgpcd_2014 %}.</dd>
-                </dl>
-            </div>
-            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <dl>
-                    <dt class="text-center water-use-accent">{{ results.0.calculated_rgpcd_2014|floatformat:2 }}</dt>
-                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.0.reporting_month|date:"F Y" }}</dd>
-                </dl>
-            </div>
-            <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <dl>
-                    <dt class="text-center water-use-accent">{{ results.1.calculated_rgpcd_2014|floatformat:2 }}</dt>
-                    <dd class="text-center">average daily gallons <br /> per resident <br /> for {{ results.1.reporting_month|date:"F Y" }}</dd>
-                </dl>
-            </div>
-        </div>
-    {% endif %}
-    <!-- end compare calculated_rgpcd -->
-
-    <!-- begin compare state average rgpcd -->
-    {% if results.0.calculated_production_monthly_gallons_month_2014 %}
-        <div class="row calculated-last-year">
-            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <dl>
-                    <dd>Residential customers in the {{ object|title }} used <span>{% percent_change latest_state_avg results.0.calculated_rgpcd_2014 %} {% compare_to_avg latest_state_avg results.0.calculated_rgpcd_2014 %}</span> water in {{ results.0.reporting_month|date:"F Y" }} when compared to the statewide average daily per capita residential water use of {{ latest_state_avg|floatformat:2|intcomma }} gallons.</dd>
-                    <dt class="text-center"></dt>
-                </dl>
-            </div>
-        </div>
-    {% endif %}
-    <!-- end compare state average rgpcd -->
-
-    {% if data_2014 %}
-        <!-- begin charts -->
-        <div class="row chart">
-            <div class="_data_figure hidden-xs col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <dl>
-                    <!--
-                    <dt class="text-center">{% build_chart_title data_2014 %}</dt>
-                    -->
-                    <dd>{% build_chart_sentence data_2014 %}</dd>
-                </dl>
-            </div>
-            <div id="per-capita-use" class="ct-chart ct-double-octave"></div>
-        </div>
-        <!-- end charts -->
-    {% endif %}
-
-    <div class="row">
-        <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h4 class="text-center">Enforcement statistics</h4>
-            <dl>
-                <dd>This table displays selected enforcement statistics reported by <a href="{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/">{{ region_name }}</a> water agencies to the <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/conservation_reporting_info.shtml">State Water Resources Control Board</a>.</dd>
-            </dl>
-            <div id="table-container">
-                <div id="table_fu">
-                    <div id="controls" class="row">
-                        <div class="filter col-xs-12 col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                            <form class="form-inline" >
-                                <input type="text" class="search form-control" placeholder="Search this table...">
-                            </form>
-                        </div>
-                        <!--
-                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pager">
-                            <form class="form-inline">
-                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                    <p class="text-center"><span class="glyphicon glyphicon-fast-backward first"></span>
-                                    <span class="glyphicon glyphicon-backward prev"></span>
-                                    <span class="pagedisplay"></span>
-                                    <span class="glyphicon glyphicon-forward next"></span>
-                                    <span class="glyphicon glyphicon-fast-forward last"></span></p>
-                                </div>
-                                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                    <select class="pagenav form-control"></select>
-                                </div>
-                                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                                    <select class="pagesize form-control"></select>
-                                </div>
-                            </form>
-                        </div>
-                        -->
-                    </div>
-                    <div class="clear"></div>
-                    <table id="data" class="kpcc-table tabular table">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="cursor: pointer;">Month</th>
-                                <th class="text-center" style="cursor: pointer;">Watering Days</th>
-                                <th class="text-center" style="cursor: pointer;">Complaints</th>
-                                <th class="text-center" style="cursor: pointer;">Follow-up Actions</th>
-                                <th class="text-center" style="cursor: pointer;">Warnings Issued</th>
-                                <th class="text-center" style="cursor: pointer;">Penalties Assessed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for supplier in enforcement_stats %}
-                                <tr>
-                                    <td class="text-center"><mark>Month</mark>{{ supplier.reporting_month|date:"F Y" }}</td>
-                                    {% if supplier.water_days_allowed_week %}
-                                        <td class="text-center"><mark>Watering Days</mark>{{ supplier.water_days_allowed_week|intcomma }}</td>
-                                    {% else %}
-                                        <td class="text-center"><mark>Watering Days</mark>n/a</td>
-                                    {% endif %}
-                                    {% if supplier.complaints_received %}
-                                        <td class="text-center"><mark>Complaints Received</mark>{{ supplier.complaints_received|intcomma }}</td>
-                                    {% else %}
-                                        <td class="text-center"><mark>Complaints Received</mark>n/a</td>
-                                    {% endif %}
-                                    {% if supplier.follow_up_actions %}
-                                        <td class="text-center"><mark>Follow-up Actions</mark>{{ supplier.follow_up_actions|intcomma }}</td>
-                                    {% else %}
-                                        <td class="text-center"><mark>Follow-up Actions</mark>n/a</td>
-                                    {% endif %}
-                                    {% if supplier.warnings_issued %}
-                                        <td class="text-center"><mark>Warnings Issued</mark>{{ supplier.warnings_issued|intcomma }}</td>
-                                    {% else %}
-                                        <td class="text-center"><mark>Warnings Issued</mark>n/a</td>
-                                    {% endif %}
-                                    {% if supplier.penalties_assessed %}
-                                        <td class="text-center"><mark>Penalties Assessed</mark>{{ supplier.penalties_assessed|intcomma }}</td>
-                                    {% else %}
-                                        <td class="text-center"><mark>Penalties Assessed</mark>n/a</td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                        <tfoot></tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% if incentives.0.incentives_offered == True  %}
-        <div class="row incentive">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h4 class="text-center">Conservation incentive programs</h4>
-                    {% if incentives.0.incentives_details %}
-                        <p>{{ incentives.0.incentives_details }}
-                        {% if incentives.0.incentives_url %}
-                            Learn more about the conservation incentive program <a href="{{ incentives.0.incentives_url }}">here</a>.</p>
-                        {% else %}
-                        {% endif %}
-                    {% else %}
-                    </p>
-                    {% endif %}
-                    {% if incentives.0.turf_removal_offered == True  %}
-                        <p>A turf removal program also provides consumers with rebates for removing grass from their property and replacing it with a drought tolerant plants.
-                        {% if incentives.0.turf_rebate_amount %}
-                            Currently the rebate for residential customers is {{ incentives.0.turf_rebate_amount|currency }} per square foot.
-                        {% else %}
-                            </p>
-                        {% endif %}
-                        {% if incentives.0.turf_removal_details %}
-                            <p>{{ incentives.0.turf_removal_details }}</p>
-                        {% else %}
-                        {% endif %}
-                        {% if incentives.0.turf_removal_url %}
-                            <p>Learn more about the turf removal program <a href="{{ incentives.0.turf_removal_url }}">here</a>.</p>
-                        {% else %}
-                        {% endif %}
-                    {% else %}
-                    {% endif %}
-                <p class="pubdate small-writing">&ndash; Last updated {{ incentives.0.turf_removal_last_updated|date:"F Y" }}</p>
-            </div>
-        </div>
-    {% endif %}
-
-    <!--
-    {% if restrictions.0.restriction == True %}
-        <div class="row restrictions">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                {% if restrictions.0.restriction_current_status == None %}
-                    <h6 class="text-center">We couldn't find updated information for {{ restrictions.0.supplier_name|title }}.</h6>
-                {% elif restrictions.0.restriction_current_status == "state-mandated" %}
-                    <h6 class="text-center">{{ restrictions.0.supplier_name|title }} now should be following <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/emergency_regulations/oal_app2014071810e.pdf">statewide water restrictions</a> that took effect July 29, 2014.</h6>
-                {% elif restrictions.0.restriction_current_status == "restrictions" %}
-                    <h6 class="text-center">{{ restrictions.0.supplier_name|title }} had restrictions in place prior to <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/emergency_regulations/oal_app2014071810e.pdf">statewide action</a> on July 29, 2014.</h6>
-                {% else %}
-                    <h6 class="text-center">We couldn't find updated information for {{ restrictions.0.supplier_name|title }}.</h6>
-                {% endif %}
-                {% if restrictions.0.restriction_details %}
-                    <p>{{ restrictions.0.restriction_details|safe }}</p>
-                    <p class="pubdate small-writing">&ndash; Last updated {{ restrictions.0.restrictions_last_updated|date:"F Y" }}</p>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-    -->
-
-    <div class="row conservation">
-        <div class="icon-display col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h4 class="text-center">Here are some ways you can help conserve water</h4>
-                {% for method in conservation_methods %}
-                    <div class="icons col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                        <img class="placemark" src="{{ method.method_image_path }}" />
-                        <p class="text-center">{{ method.method_text }}</p>
-                    </div>
+                <ul class="comparison header">
+                    <li class="month-label"></li>
+                    {% for year in range_of_years %}
+                        <li class="header"><span class="label">{{ year }}</span></li>
+                    {% endfor %}
+                </ul>
+                {% for month in yearly_comparison_data %}
+                    <ul class="{{ month.month|lower }} comparison">
+                        <li class="text-center month-label">{{ month.month }}</li>
+                        {% for item in month.data %}
+                            <li>
+                                <a href="" title="{{ month.month }} {{ item.year }}: {{ item.use }}">
+                                    <span class="label">{{ item.use|floatformat }}</span>
+                                    <span class="count" style="height: {{ item.height }}%">({{ item.use }})</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 {% endfor %}
+                <br />
+                <p class="text-center"><em>Displayed in millions of gallons</em></p>
+            </div>
         </div>
+        -->
+        <!-- end nine-month reduction target -->
+
+        <!-- begin enforcement statistics -->
+        <div class="row">
+            <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">Enforcement statistics</h4>
+                <dl>
+                    <dd>Selected enforcement statistics reported by <a href="{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/">{{ region_name }}</a> the {{ object|title }} to the <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/conservation_reporting_info.shtml">State Water Resources Control Board</a>.</dd>
+                </dl>
+                <div id="table-container">
+                    <div id="table_fu">
+                        <div id="controls" class="row">
+                            <div class="filter col-xs-12 col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                                <form class="form-inline" >
+                                    <input type="text" class="search form-control" placeholder="Search this table...">
+                                </form>
+                            </div>
+                            <!--
+                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pager">
+                                <form class="form-inline">
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <p class="text-center"><span class="glyphicon glyphicon-fast-backward first"></span>
+                                        <span class="glyphicon glyphicon-backward prev"></span>
+                                        <span class="pagedisplay"></span>
+                                        <span class="glyphicon glyphicon-forward next"></span>
+                                        <span class="glyphicon glyphicon-fast-forward last"></span></p>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <select class="pagenav form-control"></select>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                                        <select class="pagesize form-control"></select>
+                                    </div>
+                                </form>
+                            </div>
+                            -->
+                        </div>
+                        <div class="clear"></div>
+                        <table id="data" class="kpcc-table tabular table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="cursor: pointer;">Month</th>
+                                    <th class="text-center" style="cursor: pointer;">Watering Days</th>
+                                    <th class="text-center" style="cursor: pointer;">Complaints</th>
+                                    <th class="text-center" style="cursor: pointer;">Follow-up Actions</th>
+                                    <th class="text-center" style="cursor: pointer;">Warnings Issued</th>
+                                    <th class="text-center" style="cursor: pointer;">Penalties Assessed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for supplier in enforcement_stats %}
+                                    <tr>
+                                        <td class="text-center"><mark>Month</mark>{{ supplier.reporting_month|date:"F Y" }}</td>
+                                        {% if supplier.water_days_allowed_week %}
+                                            <td class="text-center"><mark>Watering Days</mark>{{ supplier.water_days_allowed_week|intcomma }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>Watering Days</mark>&mdash;</td>
+                                        {% endif %}
+                                        {% if supplier.complaints_received %}
+                                            <td class="text-center"><mark>Complaints Received</mark>{{ supplier.complaints_received|intcomma }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>Complaints Received</mark>&mdash;</td>
+                                        {% endif %}
+                                        {% if supplier.follow_up_actions %}
+                                            <td class="text-center"><mark>Follow-up Actions</mark>{{ supplier.follow_up_actions|intcomma }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>Follow-up Actions</mark>&mdash;</td>
+                                        {% endif %}
+                                        {% if supplier.warnings_issued %}
+                                            <td class="text-center"><mark>Warnings Issued</mark>{{ supplier.warnings_issued|intcomma }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>Warnings Issued</mark>&mdash;</td>
+                                        {% endif %}
+                                        {% if supplier.penalties_assessed %}
+                                            <td class="text-center"><mark>Penalties Assessed</mark>{{ supplier.penalties_assessed|intcomma }}</td>
+                                        {% else %}
+                                            <td class="text-center"><mark>Penalties Assessed</mark>&mdash;</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end enforcement statistics -->
+
+        <!-- begin agency incentives -->
+        <!--
+        {% if incentives.0.incentives_offered == True  %}
+            <div class="row incentive">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <h4 class="text-center">Conservation incentive programs</h4>
+                        {% if incentives.0.incentives_details %}
+                            <p>{{ incentives.0.incentives_details }}
+                            {% if incentives.0.incentives_url %}
+                                Learn more about the conservation incentive program <a href="{{ incentives.0.incentives_url }}">here</a>.</p>
+                            {% else %}
+                            {% endif %}
+                        {% else %}
+                        </p>
+                        {% endif %}
+                        {% if incentives.0.turf_removal_offered == True  %}
+                            <p>A turf removal program also provides consumers with rebates for removing grass from their property and replacing it with a drought tolerant plants.
+                            {% if incentives.0.turf_rebate_amount %}
+                                Currently the rebate for residential customers is {{ incentives.0.turf_rebate_amount|currency }} per square foot.
+                            {% else %}
+                                </p>
+                            {% endif %}
+                            {% if incentives.0.turf_removal_details %}
+                                <p>{{ incentives.0.turf_removal_details }}</p>
+                            {% else %}
+                            {% endif %}
+                            {% if incentives.0.turf_removal_url %}
+                                <p>Learn more about the turf removal program <a href="{{ incentives.0.turf_removal_url }}">here</a>.</p>
+                            {% else %}
+                            {% endif %}
+                        {% else %}
+                        {% endif %}
+                    <p class="pubdate small-writing">&ndash; Last updated {{ incentives.0.turf_removal_last_updated|date:"F Y" }}</p>
+                </div>
+            </div>
+        {% endif %}
+        -->
+        <!-- end agency incentives -->
+
+        <!-- begin use restrictions -->
+        <!--
+        {% if restrictions.0.restriction == True %}
+            <div class="row restrictions">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    {% if restrictions.0.restriction_current_status == None %}
+                        <h6 class="text-center">We couldn't find updated information for {{ restrictions.0.supplier_name|title }}.</h6>
+                    {% elif restrictions.0.restriction_current_status == "state-mandated" %}
+                        <h6 class="text-center">{{ restrictions.0.supplier_name|title }} now should be following <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/emergency_regulations/oal_app2014071810e.pdf">statewide water restrictions</a> that took effect July 29, 2014.</h6>
+                    {% elif restrictions.0.restriction_current_status == "restrictions" %}
+                        <h6 class="text-center">{{ restrictions.0.supplier_name|title }} had restrictions in place prior to <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/emergency_regulations/oal_app2014071810e.pdf">statewide action</a> on July 29, 2014.</h6>
+                    {% else %}
+                        <h6 class="text-center">We couldn't find updated information for {{ restrictions.0.supplier_name|title }}.</h6>
+                    {% endif %}
+                    {% if restrictions.0.restriction_details %}
+                        <p>{{ restrictions.0.restriction_details|safe }}</p>
+                        <p class="pubdate small-writing">&ndash; Last updated {{ restrictions.0.restrictions_last_updated|date:"F Y" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        -->
+        <!-- end use restrictions -->
+
+        <!-- begin conservation ideas -->
+        <div class="row conservation">
+            <div class="icon-display col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="text-center">Here are some ways you can help conserve water</h4>
+                    {% for method in conservation_methods %}
+                        <div class="icons col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                            <img class="placemark" src="{{ method.method_image_path }}" />
+                            <p class="text-center">{{ method.method_text }}</p>
+                        </div>
+                    {% endfor %}
+            </div>
+        </div>
+        <!-- end conservation ideas -->
+
+        <!-- begin data caveats -->
+        <p class="lead"><strong>About the data</strong>: This data is for urban water suppliers and is based on the the most recent reports submitted to the <a href="http://www.waterboards.ca.gov/waterrights/">State Water Resources Control Board</a>. Since the gallons of water used per person per day measurement does not take into account rainfall, temperature, humidity and population density, the State Water Resources Control Board discourages comparisons between water suppliers.</p>
+        <!-- end data caveats -->
+
     </div>
-
-    <p class="lead"><strong>About the data</strong>: This data is for urban water suppliers and is based on the the most recent reports submitted to the <a href="http://www.waterboards.ca.gov/waterrights/">State Water Resources Control Board</a>. Since the gallons of water used per person per day measurement does not take into account rainfall, temperature, humidity and population density, the State Water Resources Control Board discourages comparisons between water suppliers.</p>
-
-</div>
 {% endblock %}
 
 {% block config_js %}
@@ -446,7 +467,6 @@
 {% endblock %}
 
 {% block super_js %}
-    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/chartist.min.js"></script>
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/_application.js"></script>
     <script>
         var sorting_array = [];
@@ -457,42 +477,7 @@
             3: {sorter: true},
             4: {sorter: true},
         };
-
-        var per_capita_labels = {{ labels|app_config_object|safe }};
-        var per_capita_data = {
-            labels: per_capita_labels,
-            series: [
-            //{
-                //name: "2013",
-                //data: {{ data_2013 }}
-            //},
-            {
-                name: "2014",
-                data: {{ data_2014 }}
-            }]
-        };
-
-        // var reduction_labels = {{ reduction_labels|app_config_object|safe }};
-        // var reduction_data = {
-        //     labels: reduction_labels,
-        //     series: [
-        //     {
-        //         name: "actual",
-        //         data: {{ production_figures }}
-        //     },
-        //     {
-        //         name: "dividing_line",
-        //         data: {{ dividing_line }}
-        //     },
-        //     {
-        //         name: "baseline",
-        //         data: {{ reduction_goals}}
-        //     }]
-        // }
-
         $(document).ready(function(){
-            fn.drawUsageOverTimeChart(per_capita_labels, per_capita_data, "#per-capita-use");
-            // fn.drawProgressTowardReductionTargetChart(reduction_labels, reduction_data, "#reduction-progress")
             fn.createReductionComparisonTable(sorting_array, headers_object);
         });
     </script>

@@ -23,12 +23,32 @@ class TasksForMonthlyWaterUseReport(object):
 
     sluggy = MonthlyFormattingMethods()
 
-    csv_file = "/Users/ckeller/Desktop/supplier_compliance_040416.csv"
+    csv_file = "/Users/ckeller/Desktop/stress_test_fields.csv"
 
     def _init(self, *args, **kwargs):
         # self.model_second_round_reductions(self.csv_file)
         # self.model_cum_savings(self.csv_file)
-        self.model_supplier_reached_target()
+        # self.model_supplier_reached_target()
+        self.model_supplier_stress_test(self.csv_file)
+
+    def model_supplier_stress_test(self, target_csv_file):
+        with open(target_csv_file, "rb") as csvfile:
+            csv_data = csv.DictReader(csvfile, delimiter=',')
+            for row in csv_data:
+                clean_row = {re.sub(r"\([^)]*\)", "", k).strip().replace("- ", "").replace(" ", "_").replace("/", "_").lower(): v.strip() for k, v in row.iteritems()}
+                clean_row["supplier_name"] = clean_row["supplier_name"].split(" (")
+                supplier = self.sluggy._can_prettify_and_slugify_string(clean_row["supplier_name"][0])
+                clean_row["supplier_name"] = supplier["supplier_name"]
+                clean_row["supplier_slug"] = supplier["supplier_slug"]
+                try:
+                    supplier = WaterSupplier.objects.filter(supplier_slug=clean_row["supplier_slug"]).first()
+                    if supplier:
+                        supplier.stress_test_conservation_standard = clean_row["stress_test_conservation_standard"]
+                        supplier.save()
+                except Exception, exception:
+                    error_output = "%s %s" % (exception, clean_row["supplier_slug"])
+                    logger.error(error_output)
+                    raise
 
     def model_second_round_reductions(self, target_csv_file):
         with open(target_csv_file, "rb") as csvfile:
