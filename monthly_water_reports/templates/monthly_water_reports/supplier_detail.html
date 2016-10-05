@@ -4,76 +4,58 @@
 {% load monthly_water_reports_template_tags %}
 
 <!-- begin meta -->
-{% block title %}{{ object|title }} monthly water use data{% endblock %}
+{% block title %}{{ object|title }} {{ latest_month.reporting_month|date:"F" }} water use{% endblock %}
 
 {% block robots %}{% endblock %}
 
 {% block description %}
-    {% if results.0.calculated_rgpcd_2013 %}
-        Gallons of water used per person per day {% increase_or_decrease results.0.calculated_rgpcd_2013 results.0.calculated_rgpcd_2014 %} in {{ results.0.reporting_month|date:"N Y" }} compared to {{ results.0.reporting_month|get_last_year|date:"N Y" }} in the {{ object|title }}
-    {% else %}
-        Residential customers in the {{ object|title }} used {{ results.0.calculated_rgpcd_2014 }} gallons of water used per person per day in {{ results.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
-    {% endif %}
+    Residential customers in the {{ object|title }} used an average of {{ same_month.0.calculated_rgpcd_2014|floatformat:2 }} gallons of water per day in {{ same_month.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
 {% endblock %}
 
 {% block keywords %}{{ object|title }}, {{ object.hydrologic_region }} hydrological region, drought, state water resources control board, california, water conservation, california drought{% endblock %}
-{% block og_title %}{{ object|title }} monthly water use data{% endblock %}
+
+{% block og_title %}{{ object|title }} {{ latest_month.reporting_month|date:"F" }} water use{% endblock %}
+
 {% block og_site_name %}KPCC{% endblock %}
+
 {% block og_type %}website{% endblock %}
+
 {% block og_url %}http://projects.scpr.org/applications/monthly-water-use/{{ slug }}/{% endblock %}
 
 {% block og_description %}
-    {% if results.0.calculated_rgpcd_2013 %}
-        Gallons of water used per person per day {% increase_or_decrease results.0.calculated_rgpcd_2013 results.0.calculated_rgpcd_2014 %} in {{ results.0.reporting_month|date:"N Y" }} compared to {{ results.0.reporting_month|get_last_year|date:"N Y" }} in the {{ object|title }}
-    {% else %}
-        Residential customers in the {{ object|title }} used {{ results.0.calculated_rgpcd_2014 }} gallons of water used per person per day in {{ results.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
-    {% endif %}
+    Residential customers in the {{ object|title }} used an average of {{ same_month.0.calculated_rgpcd_2014|floatformat:2 }} gallons of water per day in {{ same_month.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
 {% endblock %}
 
 {% block twitter_url %}http://projects.scpr.org/applications/monthly-water-use/{{ slug }}/{% endblock %}
-{% block twitter_title %}{{ object|title }} monthly water use data{% endblock %}
+
+{% block twitter_title %}{{ object|title }} {{ latest_month.reporting_month|date:"F" }} water use{% endblock %}
 
 {% block twitter_description %}
-    {% if results.0.calculated_rgpcd_2013 %}
-        Gallons of water used per person per day {% increase_or_decrease results.0.calculated_rgpcd_2013 results.0.calculated_rgpcd_2014 %} in {{ results.0.reporting_month|date:"N Y" }} compared to {{ results.0.reporting_month|get_last_year|date:"N Y" }} in the {{ object|title }}
-    {% else %}
-        Residential customers in the {{ object|title }} used {{ results.0.calculated_rgpcd_2014 }} gallons of water used per person per day in {{ results.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
-    {% endif %}
+    Residential customers in the {{ object|title }} used an average of {{ same_month.0.calculated_rgpcd_2014|floatformat:2 }} gallons of water per day in {{ same_month.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
 {% endblock %}
 
 {% block facebook_encoded_share_url %}http://projects.scpr.org/applications/monthly-water-use/{{ slug }}/{% endblock %}
 
 {% block twitter_share_text %}
-    {% if results.0.calculated_rgpcd_2013 %}
-        Gallons of water used per person per day {% increase_or_decrease results.0.calculated_rgpcd_2013 results.0.calculated_rgpcd_2014 %} in {{ results.0.reporting_month|date:"N Y" }} compared to {{ results.0.reporting_month|get_last_year|date:"N Y" }} in the {{ object|title }}
-    {% else %}
-        Residential customers in the {{ object|title }} used {{ results.0.calculated_rgpcd_2014 }} gallons of water used per person per day in {{ results.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
-    {% endif %}
+    Residential customers in the {{ object|title }} used an average of {{ same_month.0.calculated_rgpcd_2014|floatformat:2 }} gallons of water per day in {{ same_month.0.reporting_month|date:"N Y" }}, according to the latest data from the State Water Resources Control Board.
 {% endblock %}
 
 {% block twitter_encoded_share_url %}http://projects.scpr.org/applications/monthly-water-use/{{ slug }}/{% endblock %}
 <!-- end meta -->
 
 {% block super_css %}
-    <link href="{{ STATIC_URL }}monthly_water_reports/css/chartist.min.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="{{ STATIC_URL }}monthly_water_reports/css/chart-override.css" media="screen" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block header_js %}
-
     <style type="text/css">
-        #table-container {
-            padding: 20px 10px 20px 10px;
-            font-family: "proxima-nova", "helvetica neue", helvetica, arial, sans-serif;
-        }
+        #table-container { padding: 20px 10px 20px 10px; font-family: "proxima-nova", "helvetica neue", helvetica, arial, sans-serif; }
     </style>
-    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/chartist.min.js"></script>
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.js"></script>
-
     <!--
+    <script src="{{ STATIC_URL }}monthly_water_reports/scripts/chartist.min.js"></script>
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.pager.js"></script>
     -->
-
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/jquery.tablesorter.multipagefilter.js"></script>
     <script type="text/javascript">
         /* For picking out bits from the query string */
@@ -248,7 +230,7 @@
                         </dl>
                     </div>
                 {% else %}
-                    <div class="_data_figure col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div class="_data_figure col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <dl>
                             <dd class="text-center accent-text">Nine-month water use figures for the {{ object|title }} are not available.</dd>
                         </dl>
@@ -302,25 +284,6 @@
                                     <input type="text" class="search form-control" placeholder="Search this table...">
                                 </form>
                             </div>
-                            <!--
-                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pager">
-                                <form class="form-inline">
-                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                        <p class="text-center"><span class="glyphicon glyphicon-fast-backward first"></span>
-                                        <span class="glyphicon glyphicon-backward prev"></span>
-                                        <span class="pagedisplay"></span>
-                                        <span class="glyphicon glyphicon-forward next"></span>
-                                        <span class="glyphicon glyphicon-fast-forward last"></span></p>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                        <select class="pagenav form-control"></select>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                                        <select class="pagesize form-control"></select>
-                                    </div>
-                                </form>
-                            </div>
-                            -->
                         </div>
                         <div class="clear"></div>
                         <table id="data" class="kpcc-table tabular table">

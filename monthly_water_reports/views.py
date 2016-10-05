@@ -471,6 +471,7 @@ class ComparisonIndex(BuildableDetailView):
             if supplier.reports:
                 supplier.latest_month = supplier.reports[0]
                 supplier.this_month = supplier.latest_month.reporting_month.month
+                context["which_month"] = supplier.latest_month.reporting_month
                 supplier.same_month = supplier.reports.filter(reporting_month__month=supplier.this_month).order_by("-reporting_month")
                 supplier.range_of_years = [2013, 2015, 2016]
                 supplier.month_comparison_data = q._month_comparison_data(supplier.range_of_years, supplier.same_month.order_by("reporting_month"))
@@ -624,10 +625,14 @@ class SupplierDetailView(BuildableDetailView):
         #     "conservation_tier": self.object.june_11_tier,
         #     "conservation_savings": self.object.june_11_estimated_savings,
         # }
+
         reduction_period = context["reports"].filter(reporting_month__gte="2015-06-01").filter(reporting_month__lte="2016-05-30").order_by("reporting_month")
         baseline_usage = reduction_period.values_list("calculated_production_monthly_gallons_month_2013", flat=True)
         current_usage = reduction_period.values_list("calculated_production_monthly_gallons_month_2014", flat=True)
-        context["cumulative_calcs"] = q._create_cumulative_savings(current_usage, baseline_usage, self.object.june_11_reduction, self.object.supplier_slug)
+        try:
+            context["cumulative_calcs"] = q._create_cumulative_savings(current_usage, baseline_usage, self.object.june_11_reduction, self.object.supplier_slug)
+        except:
+            context["cumulative_calcs"] = None
         # context["restrictions"] = WaterRestriction.objects.filter(supplier_name_id = self.object)
         # context["incentives"] = WaterIncentive.objects.filter(supplier_name_id=self.object)
         context["conservation_methods"] = WaterConservationMethod.objects.all().order_by("?")[:4]
@@ -714,36 +719,6 @@ class QueryUtilities(object):
                 this_dict["data"].append(data_dict)
             output.append(this_dict)
         return output
-
-    # def _yearly_comparison_data(self, range, queryset):
-    #     month_range = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    #     output = []
-    #     for year in range:
-    #         this_dict = {}
-    #         if year == 2013:
-    #             values = queryset.filter(reporting_month__year=2015)
-    #             this_dict["year"] = year
-    #             this_dict["data"] = []
-    #             for month in month_range:
-    #                 this_month = values.filter(reporting_month__month=month)
-    #                 if this_month:
-    #                     this_use = self._millify(this_month.first().calculated_production_monthly_gallons_month_2013)
-    #                 else:
-    #                     this_use = None
-    #                 this_dict["data"].append(this_use)
-    #         else:
-    #             values = queryset.filter(reporting_month__year=year)
-    #             this_dict["year"] = year
-    #             this_dict["data"] = []
-    #             for month in month_range:
-    #                 this_month = values.filter(reporting_month__month=month)
-    #                 if this_month:
-    #                     this_use = self._millify(this_month.first().calculated_production_monthly_gallons_month_2014)
-    #                 else:
-    #                     this_use = None
-    #                 this_dict["data"].append(this_use)
-    #         output.append(this_dict)
-    #     return json.dumps(output)
 
     def _latest_month_latest_report(self, queryset):
         """

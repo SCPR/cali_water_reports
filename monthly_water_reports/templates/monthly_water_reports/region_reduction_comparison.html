@@ -4,19 +4,19 @@
 {% load monthly_water_reports_template_tags %}
 
 <!-- begin meta -->
-{% block title %}Is {{ region_name }} water use increasing{% endblock %}
+{% block title %}Is {{ region_name }} water use increasing?{% endblock %}
 {% block robots %}{% endblock %}
-{% block description %}{% endblock %}
-{% block og_title %}Is {{ region_name }} water use increasing{% endblock %}
+{% block description %}Here's a comparison of water use among the agencies in California's {{ region_name }} hydrological region{% endblock %}
+{% block og_title %}Is {{ region_name }} water use increasing?g{% endblock %}
 {% block og_site_name %}KPCC{% endblock %}
 {% block og_type %}website{% endblock %}
 {% block og_url %}{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/reduction-comparison/{% endblock %}
-{% block og_description %}{% endblock %}
+{% block og_description %}Here's a comparison of water use among the agencies in California's {{ region_name }} hydrological region{% endblock %}
 {% block twitter_url %}{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/reduction-comparison/{% endblock %}
-{% block twitter_title %}Is {{ region_name }} water use increasing{% endblock %}
-{% block twitter_description %}{% endblock %}
+{% block twitter_title %}Is {{ region_name }} water use increasing?{% endblock %}
+{% block twitter_description %}Here's a comparison of water use among the agencies in California's {{ region_name }} hydrological region{% endblock %}
 {% block facebook_encoded_share_url %}{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/reduction-comparison/{% endblock %}
-{% block twitter_share_text %}{% endblock %}
+{% block twitter_share_text %}Here's a comparison of water use among the agencies in California's {{ region_name }} hydrological region{% endblock %}
 {% block twitter_encoded_share_url %}{% settings_value 'URL_PATH' %}/region/{{ region_slug }}/reduction-comparison/{% endblock %}
 <!-- end meta -->
 
@@ -93,25 +93,6 @@
                             <input type="text" class="search form-control" placeholder="Filter list of {{ region_name }} agencies...">
                         </form>
                     </div>
-                    <!--
-                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 pager">
-                        <form class="form-inline">
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <p class="text-center"><span class="glyphicon glyphicon-fast-backward first"></span>
-                                <span class="glyphicon glyphicon-backward prev"></span>
-                                <span class="pagedisplay"></span>
-                                <span class="glyphicon glyphicon-forward next"></span>
-                                <span class="glyphicon glyphicon-fast-forward last"></span></p>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <select class="pagenav form-control"></select>
-                            </div>
-                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                                <select class="pagesize form-control"></select>
-                            </div>
-                        </form>
-                    </div>
-                    -->
                 </div>
                 <div class="clear"></div>
                 <table id="data" class="kpcc-table tabular table">
@@ -119,9 +100,10 @@
                         <tr>
                             <th class="text-center" style="cursor: pointer;">Water Agency</th>
                             <th class="text-center" style="cursor: pointer;">Stress Test Standard</th>
-                            <th class="text-center" style="cursor: pointer;">2013 Use</th>
-                            <th class="text-center" style="cursor: pointer;">2015 Use</th>
-                            <th class="text-center" style="cursor: pointer;">2016 Use</th>
+                            <th class="text-center" style="cursor: pointer;">{{ which_month|date:"F" }} 2013 Use</th>
+                            <th class="text-center" style="cursor: pointer;">{{ which_month|date:"F" }} 2015 Use</th>
+                            <th class="text-center" style="cursor: pointer;">{{ which_month|date:"F" }} 2016 Use</th>
+                            <th class="text-center" style="cursor: pointer;">Change between 2013 and 2016</th>
                             <th class="text-center" style="cursor: pointer;">Change between 2015 and 2016</th>
                         </tr>
                     </thead>
@@ -129,14 +111,23 @@
                         {% for supplier in water_suppliers %}
                             <tr>
                                 <td><mark>Water Agency</mark><a href="{% settings_value 'URL_PATH' %}/{{ supplier.supplier_slug }}/" target="blank">{{ supplier.supplier_name|title }}</a></td>
-                                <td><mark>Stress Test Standard</mark>{{ supplier.stress_test_conservation_standard }}</td>
+                                {% if supplier.stress_test_conservation_standard %}
+                                    <td><mark>Stress Test Standard</mark>{{ supplier.stress_test_conservation_standard|percentage }}</td>
+                                {% else %}
+                                    <td><mark>Stress Test Standard</mark>{{ supplier.stress_test_conservation_standard }}</td>
+                                {% endif %}
                                 {% for year in supplier.month_comparison_data %}
                                     <td><mark>{{ year.year }}</mark>{{ year.use|floatformat:2 }}</td>
                                 {% endfor %}
-                                {% if supplier.same_month.1.calculated_production_monthly_gallons_month_2014 %}
-                                    <td><mark>Increase 2015 to 2016</mark>{% compare_percent_change supplier.same_month.1.calculated_production_monthly_gallons_month_2014 supplier.same_month.0.calculated_production_monthly_gallons_month_2014 %}</td>
+                                {% if supplier.same_month.2.calculated_production_monthly_gallons_month_2014 %}
+                                    <td><mark>Change between 2013 and 2016</mark>{% compare_percent_change supplier.same_month.2.calculated_production_monthly_gallons_month_2014 supplier.same_month.0.calculated_production_monthly_gallons_month_2014 %}</td>
                                 {% else %}
-                                    <td><mark>Increase 2015 to 2016</mark>--</td>
+                                    <td><mark>Change between 2013 and 2016</mark>--</td>
+                                {% endif %}
+                                {% if supplier.same_month.1.calculated_production_monthly_gallons_month_2014 %}
+                                    <td><mark>Change between 2015 and 2016</mark>{% compare_percent_change supplier.same_month.1.calculated_production_monthly_gallons_month_2014 supplier.same_month.0.calculated_production_monthly_gallons_month_2014 %}</td>
+                                {% else %}
+                                    <td><mark>Change between 2015 and 2016</mark>--</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
@@ -159,7 +150,7 @@
 {% block super_js %}
     <script src="{{ STATIC_URL }}monthly_water_reports/scripts/_application.js"></script>
     <script>
-        var sorting_array = [[0, 0]];
+        var sorting_array = [[0, 0], [5, 1]];
         var headers_object = {
             0: {sorter: true},
             1: {sorter: true},

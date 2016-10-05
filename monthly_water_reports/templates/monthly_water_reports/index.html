@@ -4,17 +4,17 @@
 {% load monthly_water_reports_template_tags %}
 
 <!-- begin meta -->
-{% block title %}Where is California water use increasing?{% endblock %}
+{% block title %}Is California water use increasing?{% endblock %}
 {% block robots %}{% endblock %}
 {% block description %}Regulations passed by the State Water Resources Control Board last year required urban water suppliers to set mandatory conservation rules in their communities – and required those suppliers to report consumption data, to help illustrate how well the rules are working.{% endblock %}
 {% block keywords %}drought, state water resources control board, california{% endblock %}
-{% block og_title %}Where is water use decreasing?{% endblock %}
+{% block og_title %}Is California water use increasing?{% endblock %}
 {% block og_site_name %}KPCC{% endblock %}
 {% block og_type %}website{% endblock %}
 {% block og_url %}http://projects.scpr.org/static/applications/monthly-water-use{% endblock %}
 {% block og_description %}Regulations passed by the State Water Resources Control Board last year required urban water suppliers to set mandatory conservation rules in their communities – and required those suppliers to report consumption data, to help illustrate how well the rules are working.{% endblock %}
 {% block twitter_url %}http://projects.scpr.org/static/applications/monthly-water-use{% endblock %}
-{% block twitter_title %}Where is California water use increasing?{% endblock %}
+{% block twitter_title %}Is California water use increasing?{% endblock %}
 {% block twitter_description %}Regulations passed by the State Water Resources Control Board last year required urban water suppliers to set mandatory conservation rules in their communities – and required those suppliers to report consumption data, to help illustrate how well the rules are working.{% endblock %}
 {% block facebook_encoded_share_url %}http://projects.scpr.org/static/applications/monthly-water-use{% endblock %}
 {% block twitter_share_text %}Each month, California water suppliers report residential water use.{% endblock %}
@@ -104,7 +104,7 @@
             </div>
             <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
                 <h3><a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">{{ report.hydrologic_region }}</a></h3>
-                <p>Daily per capita residential water use {% increase_or_decrease report.last_month_avg report.this_month_avg %} in {{ object_list.target_report|date:"F Y" }} to an average of {{ report.this_month_avg|floatformat:2 }} gallons for the {{ report.count }} agencies in the <a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">{{ report.hydrologic_region }}</a> hydrologic region. That number is compared to the {{ object_list.target_report|get_last_month|date:"F Y" }} daily per capita residential water use of {{ report.last_month_avg|floatformat:2 }}. <span class="coal-chart-sentence show">Use the chart below to see how the {{ report.count }} agencies in this region performed.</span><span class="data-point-sentence hidden">Here are some statistics for the {{ report.count }} agencies in this region.</span> <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/enforcement-comparison/">Click here</a> to see enforcement statistics for water agencies in this region. <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/reduction-comparison/">Click here</a> to see reduction targets for water agencies in this region. </p>
+                <p>For the {{ report.count }} agencies in this <a href="..{% url 'water-region-display' report.hydrologic_region|slugify %}">region</a> the average daily water consumption by each residential customer {% increase_or_decrease report.last_month_avg report.this_month_avg %} to {{ report.this_month_avg|floatformat:2 }} gallons in {{ object_list.target_report|date:"F Y" }} compared to {{ report.last_month_avg|floatformat:2 }} gallons in {{ object_list.target_report|get_last_month|date:"F Y" }}. <a href="{% settings_value 'URL_PATH' %}/region/{{ report.hydrologic_region|slugify }}/reduction-comparison/">See</a> how much water this region saved.</p>
 
                 <section class="coal-chart-container show">
 
