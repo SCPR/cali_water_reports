@@ -2,6 +2,9 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template import Library, Context
 from django.conf import settings
 from django.utils.timezone import utc
+
+from django.utils.safestring import SafeData, SafeText, mark_safe
+
 from django.db.models import Q, Avg, Max, Min, Sum, Count
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
@@ -76,7 +79,7 @@ def build_chart_title(data):
         change_trend = "<span class='increase-accent'>Increased</span>"
     else:
         change_trend = "<span class='decrease-accent'>Decreased</span>"
-    return change_trend
+    return mark_safe(change_trend)
 
 
 @register.simple_tag
@@ -89,6 +92,7 @@ def build_chart_sentence(data):
         change_trend = "<span class='increase-accent'>increased</span>"
     else:
         change_trend = "<span class='decrease-accent'>decreased</span>"
+    change_trend = mark_safe(change_trend)
     return "Here's a view of average daily per capita residential water use over the past %s months. Water use by this agency's residential customers has %s by %s%%, going from an average of %s gallons used by each resident per day to %s." % (number_of_records, change_trend, round(percent_change, 2), round(oldest_record, 2), round(newest_record, 2))
 
 
@@ -99,7 +103,7 @@ def increase_or_decrease(old_figure, new_figure):
         output = "<span class='increase-accent'>increased</span>"
     else:
         output = "<span class='decrease-accent'>decreased</span>"
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -109,7 +113,7 @@ def title_increase_or_decrease(old_figure, new_figure):
         output = "<span class='increase-accent'>Increased</span>"
     else:
         output = "<span class='decrease-accent'>Decreased</span>"
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -137,7 +141,7 @@ def compare_to_avg(state_figure, local_figure):
     else:
         percent_change = "%.2f" % round(percent_change, 2)
         output = "<span class='decrease-accent'>less</span>"
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -149,7 +153,7 @@ def percent_change(old_figure, new_figure):
     else:
         percent_change = "%.2f" % abs(percent_change)
         output = "<span class='decrease-accent'>%s percent</span>" % (percent_change)
-    return output
+    return mark_safe(output)
 
 @register.simple_tag
 def compare_percent_change(old_figure, new_figure):
@@ -160,7 +164,7 @@ def compare_percent_change(old_figure, new_figure):
     else:
         percent_change = "%.2f" % abs(percent_change)
         output = "<span class='decrease-accent'>-%s percent</span>" % (percent_change)
-    return output
+    return mark_safe(output)
 
 @register.simple_tag
 def change_in_reduction_tier(latest_proposal, prior_proposal):
@@ -175,7 +179,7 @@ def change_in_reduction_tier(latest_proposal, prior_proposal):
             output = "Decreased"
         else:
             output = "n/a"
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -192,7 +196,7 @@ def met_monthly_target(old_figure, new_figure, reduction_target):
             output = "but the agency <span class='increase-accent'>fell short</span> of meeting its <span class='increase-accent'>%s percent</span> reduction target for the month" % ("%.0f" % reduction_target)
     else:
         output = "as the agency <span class='increase-accent'>failed</span> to meet its <span class='increase-accent'>%s percent</span> reduction target for the month" % ("%.0f" % reduction_target)
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -203,7 +207,7 @@ def met_conservation_target(agency, cumulative_calcs):
         output = "<dl><dd>%s water use <span class='decrease-accent'>%s by %s percent </span> between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; but the agency <span class='increase-accent'>failed to meet a %s percent reduction</span>.</dd></dl>" % (agency, cumulative_calcs["cum_status"], "%.2f" % cumulative_calcs["cum_savings"], cumulative_calcs["reduction_target_as_str"])
     else:
         output = "<dl><dd>%s water use %s between June 2015 and February 2016 &mdash; the nine months of the initial statewide conservation mandate &mdash; and did not meet a %s percent reduction." % (agency, cumulative_calcs["cum_status"], cumulative_calcs["cum_output"], cumulative_calcs["reduction_target_as_str"])
-    return output
+    return mark_safe(output)
 
 
 @register.simple_tag
@@ -240,6 +244,7 @@ def millify_new(n):
         figure = "%.2f" % (n/10**(3*millidx))
         quantity = "%s" % (millnames[millidx])
     output = "<dt class='text-center water-use-accent'>%s</dt><dd class='text-center'>%s gallons consumed</dd>" % (figure, quantity)
+    output = mark_safe(output)
     return "%s" % (output)
 
 

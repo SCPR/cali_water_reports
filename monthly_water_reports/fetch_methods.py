@@ -148,8 +148,13 @@ class MonthlyFormattingMethods(object):
                     status["value"] = int_value
                 # if fails it's a string
                 except ValueError:
-                    status["convert"] = False
-                    status["value"] = None
+                    try:
+                        int_value = int(value.replace(",", ""))
+                        status["convert"] = True
+                        status["value"] = int_value
+                    except:
+                        status["convert"] = False
+                        status["value"] = None
         return status
 
 

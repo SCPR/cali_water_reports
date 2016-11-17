@@ -48,9 +48,9 @@ class BuildMonthlyWaterUseReport(object):
         "Optional - Enforcement Actions",
         "Optional - Implementation",
         "Optional - REPORTED Recycled Water",
-        "CALCULATED Total Monthly Potable Water Production Reporting Month Gallons (Values calculated by Water Board staff. REPORTED Total Monthly Potable Water Production Reporting Month - REPORTED Monthly Ag Use Reporting Month; converted to gallons.)",
-        "CALCULATED Total Monthly Potable Water Production 2013 Gallons (Values calculated by Water Board staff. REPORTED Total Monthly Potable Water Production 2013 - REPORTED Monthly Ag Use 2013; converted to gallons.)",
-        "CALCULATED R-GPCD Reporting Month (Values calculated by Water Board staff using methodology available at http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/ws_tools/guidance_estimate_res_gpcd.pdf)",
+        "CALCULATED Total Monthly Potable Water Production Reporting Month Gallons",
+        "CALCULATED Total Monthly Potable Water Production 2013 Gallons",
+        "CALCULATED R-GPCD Reporting Month",
         "% Residential Use",
         "Comments/Corrections",
     ]

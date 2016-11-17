@@ -168,7 +168,7 @@
 
 {% block config_js %}
     <script>
-        window.appConfig = {% app_config_object object_list.config_object %};
+        window.appConfig = {{ object_list.config_object|safe }};
         window.appConfig.embed_this = false;
     </script>
 {% endblock %}

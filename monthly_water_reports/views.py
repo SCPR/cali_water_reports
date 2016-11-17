@@ -113,7 +113,7 @@ class InitialIndex(BuildableListView):
         return {
             "article_content": config["article_content"],
             "about_content": config["about_content"],
-            "config_object": config["config_object"],
+            "config_object": json.dumps(config["config_object"]),
             "target_report": latest_month_latest_report[0].reporting_month,
             "option_list": hydrologic_regions,
             "map_data": list(map_data),

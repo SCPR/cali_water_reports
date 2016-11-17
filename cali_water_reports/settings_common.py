@@ -83,7 +83,7 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
 
     # api & tools
-    "massadmin",
+    # "massadmin",
     #"tastypie",
     "bakery",
     "django_admin_bootstrapped",
