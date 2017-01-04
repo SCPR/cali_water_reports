@@ -86,10 +86,9 @@ class LoadMonthlyEnforcementStats(object):
                 clean_row["supplier_slug"] = supplier_formatted["supplier_slug"]
                 try:
                     clean_row["reporting_month"] = self.sluggy._can_make_string_to_datetime(clean_row["reporting_month"])
-                    obj, created = WaterEnforcementMonthlyReport.objects.update_or_create(
+                    obj, created = WaterEnforcementMonthlyReport.objects.get_or_create(
                         supplier_slug = clean_row["supplier_slug"],
-                        # report_date = clean_row["report_date"],
-                        reporting_month = clean_row["reporting_month"],
+                        reporting_month = clean_row["reporting_month"].replace(day=1),
                         defaults = {
                             "reported_to_state_date": clean_row["reporting_month"],
                             "supplier_name": clean_row["supplier_name"],

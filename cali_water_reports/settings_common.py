@@ -10,6 +10,11 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 import os
 
+# MAGIC HACK: without this, a recent Homebrew update broke GDAL!
+GDAL_LIBRARY_PATH = "/usr/local/lib/libgdal.dylib"
+import ctypes
+ctypes.CDLL(GDAL_LIBRARY_PATH)
+
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 ADMINS = (

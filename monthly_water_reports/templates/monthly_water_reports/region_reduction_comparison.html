@@ -119,13 +119,13 @@
                                 {% for year in supplier.month_comparison_data %}
                                     <td><mark>{{ year.year }}</mark>{{ year.use|floatformat:2 }}</td>
                                 {% endfor %}
-                                {% if supplier.same_month.2.calculated_production_monthly_gallons_month_2014 %}
-                                    <td><mark>Change between 2013 and 2016</mark>{% compare_percent_change supplier.same_month.2.calculated_production_monthly_gallons_month_2014 supplier.same_month.0.calculated_production_monthly_gallons_month_2014 %}</td>
+                                {% if supplier.month_comparison_data.0.year == 2013 %}
+                                    <td><mark>Change between 2013 and 2016</mark>{% compare_percent_change supplier.month_comparison_data.0.use supplier.month_comparison_data.2.use %}</td>
                                 {% else %}
                                     <td><mark>Change between 2013 and 2016</mark>--</td>
                                 {% endif %}
-                                {% if supplier.same_month.1.calculated_production_monthly_gallons_month_2014 %}
-                                    <td><mark>Change between 2015 and 2016</mark>{% compare_percent_change supplier.same_month.1.calculated_production_monthly_gallons_month_2014 supplier.same_month.0.calculated_production_monthly_gallons_month_2014 %}</td>
+                                {% if supplier.month_comparison_data.1.year == 2015 %}
+                                    <td><mark>Change between 2015 and 2016</mark>{% compare_percent_change supplier.month_comparison_data.1.use supplier.month_comparison_data.2.use %}</td>
                                 {% else %}
                                     <td><mark>Change between 2015 and 2016</mark>--</td>
                                 {% endif %}

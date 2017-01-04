@@ -105,8 +105,6 @@ class BuildMonthlyWaterUseReport(object):
 
                 data_to_process["supplier_active"] = True
 
-                logger.debug(clean_row)
-
                 try:
                     data_to_process["hydrologic_region"] = clean_row["hydrologic_region"]
                     data_to_process["hydrologic_region_slug"] = self.sluggy._can_create_hydrologic_region_slug(clean_row["hydrologic_region"])
