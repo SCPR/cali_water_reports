@@ -57,7 +57,9 @@ class BuildMonthlyWaterUseReport(object):
 
     suppliers_to_skip = [
         "city-of-coalinga",
-        "mountain-house-community-services-district"
+        "mountain-house-community-services-district",
+        "cloverdale",
+        "",
     ]
 
     sluggy = MonthlyFormattingMethods()

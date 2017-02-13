@@ -48,6 +48,13 @@ class LoadMonthlyEnforcementStats(object):
         "Enforcement Comments",
     ]
 
+    suppliers_to_skip = [
+        "city-of-coalinga",
+        "mountain-house-community-services-district",
+        "cloverdale",
+        "",
+    ]
+
     sluggy = MonthlyFormattingMethods()
 
     def _init(self, *args, **kwargs):
@@ -85,30 +92,33 @@ class LoadMonthlyEnforcementStats(object):
                 clean_row["supplier_name"] = supplier_formatted["supplier_name"]
                 clean_row["supplier_slug"] = supplier_formatted["supplier_slug"]
                 try:
-                    clean_row["reporting_month"] = self.sluggy._can_make_string_to_datetime(clean_row["reporting_month"])
-                    obj, created = WaterEnforcementMonthlyReport.objects.get_or_create(
-                        supplier_slug = clean_row["supplier_slug"],
-                        reporting_month = clean_row["reporting_month"].replace(day=1),
-                        defaults = {
-                            "reported_to_state_date": clean_row["reporting_month"],
-                            "supplier_name": clean_row["supplier_name"],
-                            "hydrologic_region": clean_row["hydrologic_region"],
-                            "hydrologic_region_slug": self.sluggy._can_create_hydrologic_region_slug(clean_row["hydrologic_region"]),
-                            "enforcement_comments": clean_row["enforcement_comments"],
-                            "mandatory_restrictions": clean_row["mandatory_restrictions"],
-                            "total_population_served": self.sluggy._can_convert_str_to_num(clean_row["total_population_served"])["value"],
-                            "supplier_id": None,
-                            "water_days_allowed_week": self.sluggy._can_convert_str_to_num(clean_row["water_days_allowed_week"])["value"],
-                            "complaints_received": self.sluggy._can_convert_str_to_num(clean_row["complaints_received"])["value"],
-                            "follow_up_actions": self.sluggy._can_convert_str_to_num(clean_row["follow-up_actions"])["value"],
-                            "warnings_issued": self.sluggy._can_convert_str_to_num(clean_row["warnings_issued"])["value"],
-                            "penalties_assessed": self.sluggy._can_convert_str_to_num(clean_row["penalties_assessed"])["value"],
-                        }
-                    )
-                    if created:
-                        logger.debug("%s - %s created" % (clean_row["reporting_month"], clean_row["supplier_name"]))
+                    if clean_row["supplier_slug"] in self.suppliers_to_skip:
+                        pass
                     else:
-                        logger.debug("%s - %s updated" % (clean_row["reporting_month"], clean_row["supplier_name"]))
+                        clean_row["reporting_month"] = self.sluggy._can_make_string_to_datetime(clean_row["reporting_month"])
+                        obj, created = WaterEnforcementMonthlyReport.objects.get_or_create(
+                            supplier_slug = clean_row["supplier_slug"],
+                            reporting_month = clean_row["reporting_month"].replace(day=1),
+                            defaults = {
+                                "reported_to_state_date": clean_row["reporting_month"],
+                                "supplier_name": clean_row["supplier_name"],
+                                "hydrologic_region": clean_row["hydrologic_region"],
+                                "hydrologic_region_slug": self.sluggy._can_create_hydrologic_region_slug(clean_row["hydrologic_region"]),
+                                "enforcement_comments": clean_row["enforcement_comments"],
+                                "mandatory_restrictions": clean_row["mandatory_restrictions"],
+                                "total_population_served": self.sluggy._can_convert_str_to_num(clean_row["total_population_served"])["value"],
+                                "supplier_id": None,
+                                "water_days_allowed_week": self.sluggy._can_convert_str_to_num(clean_row["water_days_allowed_week"])["value"],
+                                "complaints_received": self.sluggy._can_convert_str_to_num(clean_row["complaints_received"])["value"],
+                                "follow_up_actions": self.sluggy._can_convert_str_to_num(clean_row["follow-up_actions"])["value"],
+                                "warnings_issued": self.sluggy._can_convert_str_to_num(clean_row["warnings_issued"])["value"],
+                                "penalties_assessed": self.sluggy._can_convert_str_to_num(clean_row["penalties_assessed"])["value"],
+                            }
+                        )
+                        if created:
+                            logger.debug("%s - %s created" % (clean_row["reporting_month"], clean_row["supplier_name"]))
+                        else:
+                            logger.debug("%s - %s updated" % (clean_row["reporting_month"], clean_row["supplier_name"]))
                 except ObjectDoesNotExist, exception:
                     logger.error("%s-%s" % (exception, clean_row["supplier_name"]))
                     break
