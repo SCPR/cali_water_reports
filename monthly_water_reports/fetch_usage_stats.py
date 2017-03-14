@@ -180,6 +180,8 @@ class BuildMonthlyWaterUseReport(object):
                     if self.sluggy._can_convert_str_to_num(clean_row["%_residential_use"])["convert"] == True:
                         data_to_process["percent_residential_use"] = self.sluggy._can_convert_str_to_num(clean_row["%_residential_use"])["value"]
                         data_to_process["percent_residential_use"] = data_to_process["percent_residential_use"] / 100
+                    else:
+                        data_to_process["percent_residential_use"] = 0
                 except Exception, exception:
                     error_output = "%s %s" % (exception, clean_row)
                     logger.error(error_output)
@@ -219,14 +221,6 @@ class BuildMonthlyWaterUseReport(object):
                     error_output = "%s %s" % (exception, clean_row)
                     logger.error(error_output)
                     raise
-
-                # try:
-                #     data_to_process["calculated_rgpcd_2013"] = self.sluggy._can_convert_str_to_num(clean_row["calculated_r-gpcd_2013"])["value"]
-                # except Exception, exception:
-                #     data_to_process["calculated_rgpcd_2013"] = None
-                #     error_output = "%s %s" % (exception, clean_row)
-                #     logger.error(error_output)
-                #     raise
 
                 try:
                     data_to_process["report_date"] = self.sluggy._can_create_datetime_from_filename(file_created_csv_path)
@@ -301,7 +295,6 @@ class BuildMonthlyWaterUseReport(object):
                         "calculated_production_monthly_gallons_month_2014": data["calculated_total_monthly_potable_water_production_reporting_month_gallons"],
                         "calculated_production_monthly_gallons_month_2013": data["calculated_production_monthly_gallons_month_2013"],
                         "calculated_rgpcd_2014": data["calculated_r-gpcd_reporting_month"],
-                        # "calculated_rgpcd_2013": data["calculated_rgpcd_2013"],
                         "percent_residential_use": data["percent_residential_use"],
                         "comments_or_corrections": data["comments_or_corrections"],
                         "hydrologic_region": data["hydrologic_region"],
