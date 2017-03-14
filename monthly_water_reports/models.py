@@ -169,8 +169,6 @@ class WaterRestriction(models.Model):
     restriction_violation_fine = models.FloatField("Fine amount for violation of restriction", null=True, blank=True)
     restriction_how_enforce = models.TextField("Turf Removal Details", null=True, blank=True)
     restriction = models.BooleanField("Restrictions In Place", default=False)
-    #restriction_type
-    #restriction_common
     restriction_details = models.TextField("Restriction Details", null=True, blank=True)
     restrictions_last_updated = models.DateTimeField("Restrictions Last Updated", blank=True)
 
