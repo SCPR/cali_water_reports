@@ -37,8 +37,9 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+
 """
-monthly_water_reports functions
+monthly tasks
 """
 
 def fetch_enforcement_stats():
@@ -47,17 +48,55 @@ def fetch_enforcement_stats():
     """
     local("python manage.py fetch_enforcement_stats")
 
+
 def fetch_water_use():
     """
     ingest the latest usage data from the state water resources board
     """
     local("python manage.py fetch_usage_stats")
 
-def tasks_water_use():
+
+def dump_suppliers():
     """
-    run tasks related to managing data from the state water resources board
+    shortcut to load ballot box data fixtures
     """
-    local("python manage.py usage_tasks")
+    local("python manage.py dumpdata monthly_water_reports.watersupplier > monthly_water_reports/fixtures/water_suppliers.json")
+
+
+def load_suppliers():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/water_suppliers.json")
+
+
+def dump_reports():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.watersuppliermonthlyreport > monthly_water_reports/fixtures/supplier_reports.json")
+
+
+def load_reports():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/supplier_reports.json")
+
+
+def dump_enforcement():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.waterenforcementmonthlyreport > monthly_water_reports/fixtures/enforcement_reports.json")
+
+
+def load_enforcement():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/enforcement_reports.json")
+
 
 """
 development functions
@@ -69,11 +108,13 @@ def run():
     """
     local("python manage.py runserver")
 
+
 def make():
     """
     shortcut for base manage.py function to sync the dev database
     """
     local("python manage.py makemigrations")
+
 
 def migrate():
     """
@@ -81,17 +122,20 @@ def migrate():
     """
     local("python manage.py migrate")
 
+
 def superuser():
     """
     shortcut for base manage.py function to create a superuser
     """
     local("python manage.py createsuperuser")
 
+
 def test():
     """
     shortcut for base manage.py function to create a superuser
     """
     local("python manage.py test")
+
 
 """
 bootstrapping functions
@@ -104,11 +148,13 @@ def rename_files():
     os.rename("cali_water_reports/settings_common.py.template", "cali_water_reports/settings_common.py")
     os.rename("cali_water_reports/settings_production.py.template", "cali_water_reports/settings_production.py")
 
+
 def requirements():
     """
     shortcut to install requirements from repository's requirements.txt
     """
     local("pip install -r requirements.txt")
+
 
 def create_db():
     """
@@ -134,6 +180,7 @@ def create_db():
         if connection:
             connection.close()
 
+
 def makesecret(length=50, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'):
     """
     generates secret key for use in django settings
@@ -142,20 +189,24 @@ def makesecret(length=50, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789!@#
     key = ''.join(random.choice(allowed_chars) for i in range(length))
     print 'SECRET_KEY = "%s"' % key
 
+
 def build():
     """
     build the static html pages for the project
     """
     local("python manage.py build")
 
+
 def buildserver():
     local("python manage.py buildserver")
+
 
 def move():
     """
     move the static html pages to the public directory
     """
     local("python manage.py move_baked_files")
+
 
 def commit(message='updates'):
     """
@@ -169,6 +220,7 @@ def commit(message='updates'):
             print(green("Nothing new to commit.", bold=False))
         local("git push")
 
+
 def deploy():
     """
     deploy the latest codebase
@@ -180,6 +232,7 @@ def deploy():
     local("python manage.py move_baked_files")
     time.sleep(5)
     commit()
+
 
 def bootstrap():
     """
@@ -197,6 +250,7 @@ def bootstrap():
                 time.sleep(2)
                 local("python manage.py createsuperuser")
                 run()
+
 
 def __env_cmd(cmd):
     return env.bin_root + cmd
