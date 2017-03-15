@@ -187,7 +187,7 @@ def makesecret(length=50, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789!@#
     https://github.com/datadesk/django-project-template/blob/master/fabfile/makesecret.py
     """
     key = ''.join(random.choice(allowed_chars) for i in range(length))
-    print 'SECRET_KEY = "%s"' % key
+    print 'secret_key: "%s"' % key
 
 
 def build():
