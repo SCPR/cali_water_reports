@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View, ListView, DetailView
 from django.db.models import Q, Avg, Max, Min, Sum, Count
-from monthly_water_reports.models import WaterSupplier, WaterSupplierMonthlyReport, WaterEnforcementMonthlyReport, WaterIncentive, WaterRestriction, WaterConservationMethod, HydrologicRegion
+from monthly_water_reports.models import WaterSupplier, WaterSupplierMonthlyReport, WaterEnforcementMonthlyReport, WaterConservationMethod, HydrologicRegion
 from bakery.views import BuildableListView, BuildableDetailView
 import json
 import os
