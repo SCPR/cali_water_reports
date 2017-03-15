@@ -1,1335 +1,455 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {
-  width: 45em;
-  border: 1px solid #ddd;
-  outline: 1300px solid #fff;
-  margin: 16px auto;
-}
+<h1>What is this?</h1>
 
-body .markdown-body
-{
-  padding: 30px;
-}
+<p>This Django project/application aims to answer the question &#8220;Is California water use increasing?&#8221; It processes the monthly water reports from California&#8217;s <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a> and uses <a href="https://django-bakery.readthedocs.io/en/latest/">django-bakery</a> to build KPCC&#8217;s news application <a href="http://projects.scpr.org/applications/monthly-water-use/">&#8220;Is California water use increasing?&#8221;</a></p>
 
-@font-face {
-  font-family: fontawesome-mini;
-  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
-}
+<p>There are three main steps to build the site you see <a href="http://projects.scpr.org/applications/monthly-water-use/">here</a>.</p>
 
-@font-face {
-  font-family: octicons-anchor;
-  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
-}
-
-.markdown-body {
-  font-family: sans-serif;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  color: #333333;
-  overflow: hidden;
-  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  word-wrap: break-word;
-}
-
-.markdown-body a {
-  background: transparent;
-}
-
-.markdown-body a:active,
-.markdown-body a:hover {
-  outline: 0;
-}
-
-.markdown-body b,
-.markdown-body strong {
-  font-weight: bold;
-}
-
-.markdown-body mark {
-  background: #ff0;
-  color: #000;
-  font-style: italic;
-  font-weight: bold;
-}
-
-.markdown-body sub,
-.markdown-body sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-.markdown-body sup {
-  top: -0.5em;
-}
-.markdown-body sub {
-  bottom: -0.25em;
-}
-
-.markdown-body h1 {
-  font-size: 2em;
-  margin: 0.67em 0;
-}
-
-.markdown-body img {
-  border: 0;
-}
-
-.markdown-body hr {
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  height: 0;
-}
-
-.markdown-body pre {
-  overflow: auto;
-}
-
-.markdown-body code,
-.markdown-body kbd,
-.markdown-body pre,
-.markdown-body samp {
-  font-family: monospace, monospace;
-  font-size: 1em;
-}
-
-.markdown-body input {
-  color: inherit;
-  font: inherit;
-  margin: 0;
-}
-
-.markdown-body html input[disabled] {
-  cursor: default;
-}
-
-.markdown-body input {
-  line-height: normal;
-}
-
-.markdown-body input[type="checkbox"] {
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.markdown-body table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-.markdown-body td,
-.markdown-body th {
-  padding: 0;
-}
-
-.markdown-body .codehilitetable {
-  border: 0;
-  border-spacing: 0;
-}
-
-.markdown-body .codehilitetable tr {
-  border: 0;
-}
-
-.markdown-body .codehilitetable pre,
-.markdown-body .codehilitetable div.codehilite {
-  margin: 0;
-}
-
-.markdown-body .linenos,
-.markdown-body .code,
-.markdown-body .codehilitetable td {
-  border: 0;
-  padding: 0;
-}
-
-.markdown-body td:not(.linenos) .linenodiv {
-  padding: 0 !important;
-}
-
-.markdown-body .code {
-  width: 100%;
-}
-
-.markdown-body .linenos div pre,
-.markdown-body .linenodiv pre,
-.markdown-body .linenodiv {
-  border: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  -webkit-border-top-left-radius: 3px;
-  -webkit-border-bottom-left-radius: 3px;
-  -moz-border-radius-topleft: 3px;
-  -moz-border-radius-bottomleft: 3px;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-}
-
-.markdown-body .code div pre,
-.markdown-body .code div {
-  border: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  -webkit-border-top-right-radius: 3px;
-  -webkit-border-bottom-right-radius: 3px;
-  -moz-border-radius-topright: 3px;
-  -moz-border-radius-bottomright: 3px;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
-}
-
-.markdown-body * {
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.markdown-body input {
-  font: 13px Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
-  line-height: 1.4;
-}
-
-.markdown-body a {
-  color: #4183c4;
-  text-decoration: none;
-}
-
-.markdown-body a:hover,
-.markdown-body a:focus,
-.markdown-body a:active {
-  text-decoration: underline;
-}
-
-.markdown-body hr {
-  height: 0;
-  margin: 15px 0;
-  overflow: hidden;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.markdown-body hr:before,
-.markdown-body hr:after {
-  display: table;
-  content: " ";
-}
-
-.markdown-body hr:after {
-  clear: both;
-}
-
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6 {
-  margin-top: 15px;
-  margin-bottom: 15px;
-  line-height: 1.1;
-}
-
-.markdown-body h1 {
-  font-size: 30px;
-}
-
-.markdown-body h2 {
-  font-size: 21px;
-}
-
-.markdown-body h3 {
-  font-size: 16px;
-}
-
-.markdown-body h4 {
-  font-size: 14px;
-}
-
-.markdown-body h5 {
-  font-size: 12px;
-}
-
-.markdown-body h6 {
-  font-size: 11px;
-}
-
-.markdown-body blockquote {
-  margin: 0;
-}
-
-.markdown-body ul,
-.markdown-body ol {
-  padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.markdown-body ol ol,
-.markdown-body ul ol {
-  list-style-type: lower-roman;
-}
-
-.markdown-body ul ul ol,
-.markdown-body ul ol ol,
-.markdown-body ol ul ol,
-.markdown-body ol ol ol {
-  list-style-type: lower-alpha;
-}
-
-.markdown-body dd {
-  margin-left: 0;
-}
-
-.markdown-body code,
-.markdown-body pre,
-.markdown-body samp {
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  font-size: 12px;
-}
-
-.markdown-body pre {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.markdown-body kbd {
-  background-color: #e7e7e7;
-  background-image: -moz-linear-gradient(#fefefe, #e7e7e7);
-  background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
-  background-image: linear-gradient(#fefefe, #e7e7e7);
-  background-repeat: repeat-x;
-  border-radius: 2px;
-  border: 1px solid #cfcfcf;
-  color: #000;
-  padding: 3px 5px;
-  line-height: 10px;
-  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  display: inline-block;
-}
-
-.markdown-body>*:first-child {
-  margin-top: 0 !important;
-}
-
-.markdown-body>*:last-child {
-  margin-bottom: 0 !important;
-}
-
-.markdown-body .headeranchor-link {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  display: block;
-  padding-right: 6px;
-  padding-left: 30px;
-  margin-left: -30px;
-}
-
-.markdown-body .headeranchor-link:focus {
-  outline: none;
-}
-
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6 {
-  position: relative;
-  margin-top: 1em;
-  margin-bottom: 16px;
-  font-weight: bold;
-  line-height: 1.4;
-}
-
-.markdown-body h1 .headeranchor,
-.markdown-body h2 .headeranchor,
-.markdown-body h3 .headeranchor,
-.markdown-body h4 .headeranchor,
-.markdown-body h5 .headeranchor,
-.markdown-body h6 .headeranchor {
-  display: none;
-  color: #000;
-  vertical-align: middle;
-}
-
-.markdown-body h1:hover .headeranchor-link,
-.markdown-body h2:hover .headeranchor-link,
-.markdown-body h3:hover .headeranchor-link,
-.markdown-body h4:hover .headeranchor-link,
-.markdown-body h5:hover .headeranchor-link,
-.markdown-body h6:hover .headeranchor-link {
-  height: 1em;
-  padding-left: 8px;
-  margin-left: -30px;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.markdown-body h1:hover .headeranchor-link .headeranchor,
-.markdown-body h2:hover .headeranchor-link .headeranchor,
-.markdown-body h3:hover .headeranchor-link .headeranchor,
-.markdown-body h4:hover .headeranchor-link .headeranchor,
-.markdown-body h5:hover .headeranchor-link .headeranchor,
-.markdown-body h6:hover .headeranchor-link .headeranchor {
-  display: inline-block;
-}
-
-.markdown-body h1 {
-  padding-bottom: 0.3em;
-  font-size: 2.25em;
-  line-height: 1.2;
-  border-bottom: 1px solid #eee;
-}
-
-.markdown-body h2 {
-  padding-bottom: 0.3em;
-  font-size: 1.75em;
-  line-height: 1.225;
-  border-bottom: 1px solid #eee;
-}
-
-.markdown-body h3 {
-  font-size: 1.5em;
-  line-height: 1.43;
-}
-
-.markdown-body h4 {
-  font-size: 1.25em;
-}
-
-.markdown-body h5 {
-  font-size: 1em;
-}
-
-.markdown-body h6 {
-  font-size: 1em;
-  color: #777;
-}
-
-.markdown-body p,
-.markdown-body blockquote,
-.markdown-body ul,
-.markdown-body ol,
-.markdown-body dl,
-.markdown-body table,
-.markdown-body pre,
-.markdown-body .admonition {
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.markdown-body hr {
-  height: 4px;
-  padding: 0;
-  margin: 16px 0;
-  background-color: #e7e7e7;
-  border: 0 none;
-}
-
-.markdown-body ul,
-.markdown-body ol {
-  padding-left: 2em;
-}
-
-.markdown-body ul ul,
-.markdown-body ul ol,
-.markdown-body ol ol,
-.markdown-body ol ul {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.markdown-body li>p {
-  margin-top: 16px;
-}
-
-.markdown-body dl {
-  padding: 0;
-}
-
-.markdown-body dl dt {
-  padding: 0;
-  margin-top: 16px;
-  font-size: 1em;
-  font-style: italic;
-  font-weight: bold;
-}
-
-.markdown-body dl dd {
-  padding: 0 16px;
-  margin-bottom: 16px;
-}
-
-.markdown-body blockquote {
-  padding: 0 15px;
-  color: #777;
-  border-left: 4px solid #ddd;
-}
-
-.markdown-body blockquote>:first-child {
-  margin-top: 0;
-}
-
-.markdown-body blockquote>:last-child {
-  margin-bottom: 0;
-}
-
-.markdown-body table {
-  display: block;
-  width: 100%;
-  overflow: auto;
-  word-break: normal;
-  word-break: keep-all;
-}
-
-.markdown-body table th {
-  font-weight: bold;
-}
-
-.markdown-body table th,
-.markdown-body table td {
-  padding: 6px 13px;
-  border: 1px solid #ddd;
-}
-
-.markdown-body table tr {
-  background-color: #fff;
-  border-top: 1px solid #ccc;
-}
-
-.markdown-body table tr:nth-child(2n) {
-  background-color: #f8f8f8;
-}
-
-.markdown-body img {
-  max-width: 100%;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.markdown-body code,
-.markdown-body samp {
-  padding: 0;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  margin: 0;
-  font-size: 85%;
-  background-color: rgba(0,0,0,0.04);
-  border-radius: 3px;
-}
-
-.markdown-body code:before,
-.markdown-body code:after {
-  letter-spacing: -0.2em;
-  content: "\00a0";
-}
-
-.markdown-body pre>code {
-  padding: 0;
-  margin: 0;
-  font-size: 100%;
-  word-break: normal;
-  white-space: pre;
-  background: transparent;
-  border: 0;
-}
-
-.markdown-body .codehilite {
-  margin-bottom: 16px;
-}
-
-.markdown-body .codehilite pre,
-.markdown-body pre {
-  padding: 16px;
-  overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
-  background-color: #f7f7f7;
-  border-radius: 3px;
-}
-
-.markdown-body .codehilite pre {
-  margin-bottom: 0;
-  word-break: normal;
-}
-
-.markdown-body pre {
-  word-wrap: normal;
-}
-
-.markdown-body pre code {
-  display: inline;
-  max-width: initial;
-  padding: 0;
-  margin: 0;
-  overflow: initial;
-  line-height: inherit;
-  word-wrap: normal;
-  background-color: transparent;
-  border: 0;
-}
-
-.markdown-body pre code:before,
-.markdown-body pre code:after {
-  content: normal;
-}
-
-/* Admonition */
-.markdown-body .admonition {
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  position: relative;
-  border-radius: 3px;
-  border: 1px solid #e0e0e0;
-  border-left: 6px solid #333;
-  padding: 10px 10px 10px 30px;
-}
-
-.markdown-body .admonition table {
-  color: #333;
-}
-
-.markdown-body .admonition p {
-  padding: 0;
-}
-
-.markdown-body .admonition-title {
-  font-weight: bold;
-  margin: 0;
-}
-
-.markdown-body .admonition>.admonition-title {
-  color: #333;
-}
-
-.markdown-body .attention>.admonition-title {
-  color: #a6d796;
-}
-
-.markdown-body .caution>.admonition-title {
-  color: #d7a796;
-}
-
-.markdown-body .hint>.admonition-title {
-  color: #96c6d7;
-}
-
-.markdown-body .danger>.admonition-title {
-  color: #c25f77;
-}
-
-.markdown-body .question>.admonition-title {
-  color: #96a6d7;
-}
-
-.markdown-body .note>.admonition-title {
-  color: #d7c896;
-}
-
-.markdown-body .admonition:before,
-.markdown-body .attention:before,
-.markdown-body .caution:before,
-.markdown-body .hint:before,
-.markdown-body .danger:before,
-.markdown-body .question:before,
-.markdown-body .note:before {
-  font: normal normal 16px fontawesome-mini;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  line-height: 1.5;
-  color: #333;
-  position: absolute;
-  left: 0;
-  top: 0;
-  padding-top: 10px;
-  padding-left: 10px;
-}
-
-.markdown-body .admonition:before {
-  content: "\f056\00a0";
-  color: 333;
-}
-
-.markdown-body .attention:before {
-  content: "\f058\00a0";
-  color: #a6d796;
-}
-
-.markdown-body .caution:before {
-  content: "\f06a\00a0";
-  color: #d7a796;
-}
-
-.markdown-body .hint:before {
-  content: "\f05a\00a0";
-  color: #96c6d7;
-}
-
-.markdown-body .danger:before {
-  content: "\f057\00a0";
-  color: #c25f77;
-}
-
-.markdown-body .question:before {
-  content: "\f059\00a0";
-  color: #96a6d7;
-}
-
-.markdown-body .note:before {
-  content: "\f040\00a0";
-  color: #d7c896;
-}
-
-.markdown-body .admonition::after {
-  content: normal;
-}
-
-.markdown-body .attention {
-  border-left: 6px solid #a6d796;
-}
-
-.markdown-body .caution {
-  border-left: 6px solid #d7a796;
-}
-
-.markdown-body .hint {
-  border-left: 6px solid #96c6d7;
-}
-
-.markdown-body .danger {
-  border-left: 6px solid #c25f77;
-}
-
-.markdown-body .question {
-  border-left: 6px solid #96a6d7;
-}
-
-.markdown-body .note {
-  border-left: 6px solid #d7c896;
-}
-
-.markdown-body .admonition>*:first-child {
-  margin-top: 0 !important;
-}
-
-.markdown-body .admonition>*:last-child {
-  margin-bottom: 0 !important;
-}
-
-/* progress bar*/
-.markdown-body .progress {
-  display: block;
-  width: 300px;
-  margin: 10px 0;
-  height: 24px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background-color: #ededed;
-  position: relative;
-  box-shadow: inset -1px 1px 3px rgba(0, 0, 0, .1);
-}
-
-.markdown-body .progress-label {
-  position: absolute;
-  text-align: center;
-  font-weight: bold;
-  width: 100%; margin: 0;
-  line-height: 24px;
-  color: #333;
-  text-shadow: 1px 1px 0 #fefefe, -1px -1px 0 #fefefe, -1px 1px 0 #fefefe, 1px -1px 0 #fefefe, 0 1px 0 #fefefe, 0 -1px 0 #fefefe, 1px 0 0 #fefefe, -1px 0 0 #fefefe, 1px 1px 2px #000;
-  -webkit-font-smoothing: antialiased !important;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.markdown-body .progress-bar {
-  height: 24px;
-  float: left;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  background-color: #96c6d7;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(0, 0, 0, .1);
-  background-size: 30px 30px;
-  background-image: -webkit-linear-gradient(
-    135deg, rgba(255, 255, 255, .4) 27%,
-    transparent 27%,
-    transparent 52%, rgba(255, 255, 255, .4) 52%,
-    rgba(255, 255, 255, .4) 77%,
-    transparent 77%, transparent
-  );
-  background-image: -moz-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, .4) 27%, transparent 27%,
-    transparent 52%, rgba(255, 255, 255, .4) 52%,
-    rgba(255, 255, 255, .4) 77%, transparent 77%,
-    transparent
-  );
-  background-image: -ms-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, .4) 27%, transparent 27%,
-    transparent 52%, rgba(255, 255, 255, .4) 52%,
-    rgba(255, 255, 255, .4) 77%, transparent 77%,
-    transparent
-  );
-  background-image: -o-linear-gradient(
-    135deg,
-    rgba(255, 255, 255, .4) 27%, transparent 27%,
-    transparent 52%, rgba(255, 255, 255, .4) 52%,
-    rgba(255, 255, 255, .4) 77%, transparent 77%,
-    transparent
-  );
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, .4) 27%, transparent 27%,
-    transparent 52%, rgba(255, 255, 255, .4) 52%,
-    rgba(255, 255, 255, .4) 77%, transparent 77%,
-    transparent
-  );
-}
-
-.markdown-body .progress-100plus .progress-bar {
-  background-color: #a6d796;
-}
-
-.markdown-body .progress-80plus .progress-bar {
-  background-color: #c6d796;
-}
-
-.markdown-body .progress-60plus .progress-bar {
-  background-color: #d7c896;
-}
-
-.markdown-body .progress-40plus .progress-bar {
-  background-color: #d7a796;
-}
-
-.markdown-body .progress-20plus .progress-bar {
-  background-color: #d796a6;
-}
-
-.markdown-body .progress-0plus .progress-bar {
-  background-color: #c25f77;
-}
-
-.markdown-body .candystripe-animate .progress-bar{
-  -webkit-animation: animate-stripes 3s linear infinite;
-  -moz-animation: animate-stripes 3s linear infinite;
-  animation: animate-stripes 3s linear infinite;
-}
-
-@-webkit-keyframes animate-stripes {
-  0% {
-    background-position: 0 0;
-  }
-
-  100% {
-    background-position: 60px 0;
-  }
-}
-
-@-moz-keyframes animate-stripes {
-  0% {
-    background-position: 0 0;
-  }
-
-  100% {
-    background-position: 60px 0;
-  }
-}
-
-@keyframes animate-stripes {
-  0% {
-    background-position: 0 0;
-  }
-
-  100% {
-    background-position: 60px 0;
-  }
-}
-
-.markdown-body .gloss .progress-bar {
-  box-shadow:
-    inset 0 4px 12px rgba(255, 255, 255, .7),
-    inset 0 -12px 0 rgba(0, 0, 0, .05);
-}
-
-/* Multimarkdown Critic Blocks */
-.markdown-body .critic_mark {
-  background: #ff0;
-}
-
-.markdown-body .critic_delete {
-  color: #c82829;
-  text-decoration: line-through;
-}
-
-.markdown-body .critic_insert {
-  color: #718c00 ;
-  text-decoration: underline;
-}
-
-.markdown-body .critic_comment {
-  color: #8e908c;
-  font-style: italic;
-}
-
-.markdown-body .headeranchor {
-  font: normal normal 16px octicons-anchor;
-  line-height: 1;
-  display: inline-block;
-  text-decoration: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.headeranchor:before {
-  content: '\f05c';
-}
-
-.markdown-body .task-list-item {
-  list-style-type: none;
-}
-
-.markdown-body .task-list-item+.task-list-item {
-  margin-top: 3px;
-}
-
-.markdown-body .task-list-item input {
-  margin: 0 4px 0.25em -20px;
-  vertical-align: middle;
-}
-
-/* Media */
-@media only screen and (min-width: 480px) {
-  .markdown-body {
-    font-size:14px;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .markdown-body {
-    font-size:16px;
-  }
-}
-
-@media print {
-  .markdown-body * {
-    background: transparent !important;
-    color: black !important;
-    filter:none !important;
-    -ms-filter: none !important;
-  }
-
-  .markdown-body {
-    font-size:12pt;
-    max-width:100%;
-    outline:none;
-    border: 0;
-  }
-
-  .markdown-body a,
-  .markdown-body a:visited {
-    text-decoration: underline;
-  }
-
-  .markdown-body .headeranchor-link {
-    display: none;
-  }
-
-  .markdown-body a[href]:after {
-    content: " (" attr(href) ")";
-  }
-
-  .markdown-body abbr[title]:after {
-    content: " (" attr(title) ")";
-  }
-
-  .markdown-body .ir a:after,
-  .markdown-body a[href^="javascript:"]:after,
-  .markdown-body a[href^="#"]:after {
-    content: "";
-  }
-
-  .markdown-body pre {
-    white-space: pre;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-
-  .markdown-body pre,
-  .markdown-body blockquote {
-    border: 1px solid #999;
-    padding-right: 1em;
-    page-break-inside: avoid;
-  }
-
-  .markdown-body .progress,
-  .markdown-body .progress-bar {
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-  }
-
-  .markdown-body .progress {
-    border: 1px solid #ddd;
-  }
-
-  .markdown-body .progress-bar {
-    height: 22px;
-    border-right: 1px solid #ddd;
-  }
-
-  .markdown-body tr,
-  .markdown-body img {
-    page-break-inside: avoid;
-  }
-
-  .markdown-body img {
-    max-width: 100% !important;
-  }
-
-  .markdown-body p,
-  .markdown-body h2,
-  .markdown-body h3 {
-    orphans: 3;
-    widows: 3;
-  }
-
-  .markdown-body h2,
-  .markdown-body h3 {
-    page-break-after: avoid;
-  }
-}
-</style><title>README</title></head><body><article class="markdown-body"><h1 id="processing-monthly-california-water-reports"><a name="user-content-processing-monthly-california-water-reports" href="#processing-monthly-california-water-reports" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Processing Monthly California Water Reports</h1>
-<p>This django project/application processes the monthly water reports from the <a href="http://www.waterboards.ca.gov/waterrights/water_issues/programs/drought/docs/ws_tools/guidance_estimate_res_gpcd.pdf">State Water Resources Control Board</a> and builds KPCC&rsquo;s news application <a href="http://projects.scpr.org/applications/monthly-water-use/">&ldquo;Where is California water use decreasing?&rdquo;</a></p>
-<h1 id="table-of-contents"><a name="user-content-table-of-contents" href="#table-of-contents" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Table of Contents</h1>
 <ul>
-<li><a href="#quickstart">Quickstart</a></li>
-<li><a href="#monthly-process-to-update-data-and-build-the-project">Monthly Process To Update Data and Build the Project</a></li>
+<li><a href="#how-we-process-and-update-data-each-month">How We Process And Update Data Each Month</a></li>
+<li><a href="#how-we-build-the-project-each-month">How We Build The Project Each Month</a></li>
+<li><a href="#how-we-build-the-project-each-month">How We Deploy The Project Each Month</a></li>
+</ul>
+
+<h1>Table of Contents</h1>
+
+<ul>
+<li><a href="#assumptions">Assumptions</a></li>
+<li><a href="#quickstart-to-get-up-and-running">Quickstart</a></li>
+<li><a href="#how-we-process-and-update-data-each-month">How We Process And Update Data Each Month</a></li>
+<li><a href="#how-we-build-the-project-each-month">How We Build The Project Each Month</a></li>
+<li><a href="#how-we-deploy-the-project-each-month">How We Deploy The Project Each Month</a></li>
 <li><a href="#available-fabric-commands">Available Fabric Commands</a></li>
 <li><a href="#building-a-mac-os-python-dev-environment">Building a Mac OS Python dev environment</a></li>
 </ul>
-<h1 id="quickstart"><a name="user-content-quickstart" href="#quickstart" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Quickstart</h1>
+
+<h1>Assumptions</h1>
+
 <ul>
-<li>
-<p>Clone this repo to wherever it is on your machine that you work on your projects</p>
-<pre><code>    git clone git@github.com:chrislkeller/cali_water_reports.git
-</code></pre>
-</li>
-<li>
-<p>Change into that directory</p>
-<pre><code>    cd cali_water_reports
-</code></pre>
-</li>
-<li>
-<p>Rename <code>TEMPLATE_development.yml</code> to <code>development.yml</code></p>
-</li>
-<li>
-<p>Run <code>fab makesecret</code> and add the output on line 5 of <code>development.yml</code></p>
-</li>
-<li>
-<p>Assuming you have MySQL installed, open <code>development.yml</code> and add <code>cali_water_reports</code> as the database name on line 17. Add in any username and password you might have for your MySQL install.</p>
-<pre><code>database:
-  host: "127.0.0.1"
-  port: 3306
-  database: "project_name"
-  username: "root"
-  password: ""
-</code></pre>
-</li>
-<li>
-<p>Assuming you have virtualenv and pip installed run <code>fab bootstrap</code></p>
+<li>You are running OSX.</li>
+<li>You are using Python 2.x</li>
+<li>You have <a href="https://pypi.python.org/pypi/virtualenv">virtualenv</a> and <a href="https://pypi.python.org/pypi/virtualenvwrapper">virtualenvwrapper</a> installed and working.</li>
+<li>You have MySQL installed</li>
+</ul>
+
+<p>If any of these are not true, please skip ahead to <a href="#building-a-mac-os-python-dev-environment">Building a Mac OS Python dev environment</a></p>
+
+<h1>Quickstart To Get Up And Running</h1>
+
 <ul>
-<li>This attempts to scaffold the project by:<ul>
-<li>Creating virtualenv</li>
-<li>Activating the virtualenv</li>
-<li>Installing requirements</li>
-<li>Creating the database</li>
-<li>Applyin initial Django migrations</li>
-<li>Creating the Django superuser</li>
-<li>Running the Django development server</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>Activate your virtualenv which should be named <code>cali_water_reports</code></p>
-<pre><code>    workon cali_water_reports
-</code></pre>
-</li>
-<li>
-<p>Open <code>development.yml</code> and add data settings beginning on line 37</p>
-<ul>
-<li>
-<p><code>data_path</code> is &hellip;</p>
-<pre><code>data_path = /Users/ckeller/_programming/2kpcc/django_projects/cali_water_reports/monthly_water_reports/data
-</code></pre>
-</li>
-<li>
-<p><code>file_download_path</code> is &hellip;</p>
-<pre><code>file_download_path = /Users/ckeller/_programming/2kpcc/django_projects/cali_water_reports/monthly_water_reports
-</code></pre>
-</li>
-<li>
-<p>The build parms &hellip;</p>
-<pre><code>build:
-  bakery_gzip: False
-  staging: False
-  staging_prefix: "http://127.0.0.1:8880/2kpcc/static-projects"
-  live_prefix: "http://projects.scpr.org"
-  deploy_dir: "/applications/monthly-water-use"
-  build_dir: "/Users/ckeller/_programming/2kpcc/static-projects/applications/monthly-water-use"
-  views:
-    - "monthly_water_reports.views.InitialIndex"
-    - "monthly_water_reports.views.RegionDetailView"
-    - "monthly_water_reports.views.RegionEmbedView"
-    - "monthly_water_reports.views.ComparisonIndex"
-    - "monthly_water_reports.views.EnforcementIndex"
-    - "monthly_water_reports.views.SupplierDetailView"
-</code></pre>
-</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h1 id="monthly-process-to-update-data-and-build-the-project"><a name="user-content-monthly-process-to-update-data-and-build-the-project" href="#monthly-process-to-update-data-and-build-the-project" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Monthly Process To Update Data and Build the Project</h1>
-<ul>
-<li>
-<p>Change into that directory</p>
+<li><p>Clone this repo to wherever it is on your machine that you work on your projects</p>
+
+<pre><code>git clone git@github.com:SCPR/cali_water_reports.git
+</code></pre></li>
+<li><p>Change into that directory</p>
+
 <pre><code>cd cali_water_reports
-</code></pre>
-</li>
-<li>
-<p>Activate the virtual environment</p>
+</code></pre></li>
+<li><p>Create your virtualenv and install the project/application requirements using pip</p>
+
+<pre><code>mkvirtualenv cali_water_reports
+pip install -r requirements.txt
+</code></pre></li>
+<li><p>Make a copy of <code>TEMPLATE_development.yml</code> and rename it to <code>development.yml</code></p>
+
+<pre><code>cp TEMPLATE_development.yml development.yml
+</code></pre></li>
+<li><p>Run <code>fab makesecret</code> and add the output on line 5 of <code>development.yml</code></p>
+
+<pre><code>secret_key: &quot;1=5avBguTW ... &quot;
+</code></pre></li>
+<li><p>Assuming MySQL is installed in <code>development.yml</code> add username and password for your MySQL install.</p>
+
+<pre><code>database:
+  host: &quot;127.0.0.1&quot;
+  port: 3306
+  database: &quot;cali_water_reports&quot;
+  username: &quot;root&quot;
+  password: &quot;&quot;
+</code></pre></li>
+<li><p>Assuming you have virtualenv and pip installed run <code>fab bootstrap</code></p>
+
 <ul>
-<li>Assuming you use the virtual environment created during the bootstrap process<pre><code>workon cali_water_reports
-</code></pre>
-</li>
-</ul>
-</li>
-<li>
-<p>Open <code>development.yml</code> and:</p>
+<li>This single fabric command uses several functions to scaffold the project by:
+
 <ul>
-<li>
-<p>change two URLs which are paths to the two data files provided by the <a href="http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/conservation_reporting.shtml">State Water Resources Control Board</a></p>
+<li>Creating the database: <code>fab create_db</code></li>
+<li>Applying initial Django migrations: <code>fab migrate</code></li>
+<li>Load initial data fixtures: <code>fab load_fixtures</code></li>
+<li>Creating the Django superuser: <code>python manage.py createsuperuser</code></li>
+<li>Running the Django development server: <code>fab run</code></li>
+</ul></li>
+</ul></li>
+<li><p>Navigate to <code>http://127.0.0.1:8000/</code> and you should arrive at the homepage that asks the question &#8220;Is California water use increasing?&#8221;</p></li>
+</ul>
+
+<h1>How We Process And Update Data Each Month</h1>
+
+<p>Usually on the first Tuesday of the month California&#8217;s <a href="http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/conservation_reporting.shtml">State Water Resources Control Board</a> will release the monthly reporting data from state water agencies.</p>
+
+<p>The Excel files that make available have taken many shapes and forms over the past two years. The application as its currently constructed has successfully processed the Excel files for nearly a year. That said, at any moment the state may chance how structures the Excel files. And while tests exist to see if the latest file can be process, anticipating and abstracting out possible data formats is beyond the scope of this project.</p>
+
+<p>To load the new supplier use and enforcement reports into the project&#8217;s database:</p>
+
 <ul>
-<li>
-<p><code>enforcement_file</code> is the link to the Urban Water Supplier Enforcement Statistics Excel file</p>
-<pre><code>enforcement_file: "http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/2015dec/120115_enforcement_statistics.xlsx"
-</code></pre>
-</li>
-<li>
-<p><code>usage_file</code> is the link to the monthly Urban Water Supplier Report Excel file</p>
-<pre><code>usage_file: "http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/2015dec/uw_supplier_data120115.xlsx"
-</code></pre>
-</li>
-<li>
-<p>Set <code>staging</code> to <code>True</code></p>
-</li>
-<li>
-<p>Make sure the views you want to build are valid and are not commented out</p>
-<pre><code>views:
-  - "monthly_water_reports.views.InitialIndex"
-  - "monthly_water_reports.views.RegionDetailView"
-  - "monthly_water_reports.views.RegionEmbedView"
-  - "monthly_water_reports.views.ComparisonIndex"
-  - "monthly_water_reports.views.EnforcementIndex"
-  - "monthly_water_reports.views.SupplierDetailView"
-</code></pre>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>Run the tests to gauge whether the Excel files can be downloaded, converted to csv files and ingested into the database.</p>
+<li><p>Visit California&#8217;s State Water Resources Control Board <a href="http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/conservation_reporting.shtml">Water Conservation Portal</a> and find the &#8220;Current Reporting Data.&#8221; Specifically we&#8217;re looking for a link to an Excel file usually titled &#8220;Urban Water Supplier Report Dataset.&#8221;</p></li>
+<li><p>Open <code>development.yml</code> and add data settings beginning on line 29</p>
+
+<ul>
+<li><p><code>file_download_path</code> is the absolute path to where we will download the Excel file so we can process and retrieve monthly use and monthly enforcement data</p>
+
+<pre><code>file_download_path: &quot;/Users/ckeller/_programming/2kpcc/django_projects/cali_water_reports/monthly_water_reports&quot;
+</code></pre></li>
+<li><p><code>data_path</code> is the absolute path to the <code>data</code> directory in the project&#8217;s <code>monthly_water_reports</code> directory. This is where we store the files for archiving purposes after processing. For example</p>
+
+<pre><code>data_path: &quot;/Users/ckeller/_programming/2kpcc/_projects/cali_water_reports/monthly_water_reports/data&quot;
+</code></pre></li>
+<li><p><code>enforcement_file</code> is the link to the Urban Water Supplier Report Enforcement Excel file. This used to be housed in a seprate Excel file. Now it&#8217;s included in the main file. For now we&#8217;ll just enter the link twice.</p>
+
+<pre><code>enforcement_file: &quot;http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/2017feb/uw_supplier_data020817.xlsx&quot;
+</code></pre></li>
+<li><p><code>usage_file</code> is the link to the Urban Water Supplier Report Dataset Excel file. This used to be housed in a seprate Excel file. Now it&#8217;s included in the main file. For now we&#8217;ll just enter the link twice.</p>
+
+<pre><code>usage_file: &quot;http://www.waterboards.ca.gov/water_issues/programs/conservation_portal/docs/2017feb/uw_supplier_data020817.xlsx&quot;
+</code></pre></li>
+</ul></li>
+<li><p>Run the tests to gauge whether the Excel files can be downloaded and converted to csv files, and whether the required use and enforcement keys can be found, which are needed to ingest data into the database.</p>
+
 <pre><code>fab test
-</code></pre>
-</li>
-<li>
-<p>Use the Fabric command to fetch the latest batch of enforcement stats.</p>
+[localhost] local: python manage.py test
+Creating test database for alias 'default'...
+DEBUG: test_fetch_methods.py (def test_a_download_chain 164):  Processing usage
+DEBUG: test_fetch_methods.py (def Test_can_get_response_success_from_url 183):  test if able to download report from url
+DEBUG: test_fetch_methods.py (def Test_can_write_excel_file_from 193):  test can I write an excel file from url
+DEBUG: test_fetch_methods.py (def Test_can_convert_excel_file_to 207):  can I make an excel file out of this
+DEBUG: test_fetch_methods.py (def Test_can_find_expected_keys 221):  are the keys I expect to be in the file present
+DEBUG: test_fetch_methods.py (def Test_can_make_string_to_datetime 232):  can i make a string into a datetime object
+DEBUG: test_fetch_methods.py (def test_a_download_chain 164):  Processing enforcement
+DEBUG: test_fetch_methods.py (def Test_can_get_response_success_from_url 183):  test if able to download report from url
+DEBUG: test_fetch_methods.py (def Test_can_write_excel_file_from 193):  test can I write an excel file from url
+DEBUG: test_fetch_methods.py (def Test_can_convert_excel_file_to 207):  can I make an excel file out of this
+DEBUG: test_fetch_methods.py (def Test_can_find_expected_keys 221):  are the keys I expect to be in the file present
+DEBUG: test_fetch_methods.py (def Test_can_make_string_to_datetime 232):  can i make a string into a datetime object
+</code></pre></li>
+<li><p>Use the Fabric command to fetch the latest batch of enforcement stats.</p>
+
 <pre><code>fab fetch_enforcement_stats
-</code></pre>
-</li>
-<li>
-<p>Use the Fabric command to fetch the latest batch of usage stats.</p>
+</code></pre></li>
+<li><p>Use the Fabric command to fetch the latest batch of usage stats.</p>
+
 <pre><code>fab fetch_water_use
-</code></pre>
-</li>
-<li>
-<p>If everything processed approrpriately you should now be able to view the site and do spot checks at <a href="http://127.0.0.1:8000/monthly-water-use"><a href="http://127.0.0.1:8000/monthly-water-use"><a href="http://127.0.0.1:8000/monthly-water-use">http://127.0.0.1:8000/monthly-water-use</a></a></a></p>
-<pre><code>fab run
-</code></pre>
+</code></pre></li>
+<li><p>If everything processed approrpriately you should now be able to run the development server with <code>fab run</code> and view the site to do spot checks at <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></p>
+
 <ul>
-<li>Pages I would spot check include:<ul>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/"><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/"><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/">http://127.0.0.1:8000/monthly-water-use/region/south-coast/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/">http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/">http://127.0.0.1:8000/monthly-water-use/city-of-burbank/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/"><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/">http://127.0.0.1:8000/monthly-water-use/city-of-glendale/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/"><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/"><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/">http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/</a></a></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p>Assuming you want to deploy this to the <code>static-projects</code> server, at this point you can build <em>&ldquo;baked&rdquo;</em> or static HTML version of the application.</p>
+<li>Pages I would spot check monthly water use and average daily water consumption include:
+
 <ul>
-<li>
-<p>Open a new terminal window and change into <code>static-projects</code></p>
-<pre><code>cd static-projects
-</code></pre>
-</li>
-<li>
-<p>Make sure the master branch is up-to-date</p>
-<pre><code>git pull
-</code></pre>
-</li>
-<li>
-<p>Switch to your development branch</p>
-<pre><code>git checkout aaron-dev
-</code></pre>
-</li>
-<li>
-<p>Make sure your development branch is current with the master branch</p>
-<pre><code>git merge aaron-dev master
-</code></pre>
-</li>
-<li>
-<p>Build the application</p>
-<pre><code>fab build
-</code></pre>
-<ul>
-<li><em>If you do git status and see a bunch of modified files that’s good.</em></li>
-<li><em>If you see blue files, that means something new was created - most likely a water supplier that hadn&rsquo;t existed before - and you&rsquo;ll probably want to explore why.</em></li>
+<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/">http://127.0.0.1:8000/monthly-water-use/region/south-coast/</a></li>
+<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/">http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/</a></li>
+<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/">http://127.0.0.1:8000/monthly-water-use/city-of-burbank/</a></li>
+<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/">http://127.0.0.1:8000/monthly-water-use/city-of-glendale/</a></li>
+<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/">http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/</a></li>
+</ul></li>
+</ul></li>
 </ul>
-</li>
-<li>
-<p>Open a new terminal window and start your development server</p>
+
+<h1>How We Build The Project Each Month</h1>
+
+<p>This step comes after we have processed and ingested the newest data from California&#8217;s <a href="http://www.waterboards.ca.gov/">State Water Resources Control Board</a>.</p>
+
+<p>We use <a href="https://django-bakery.readthedocs.io/en/latest/">django-bakery</a> to build out the <a href="http://projects.scpr.org/applications/monthly-water-use/">&#8220;Is California water use increasing?&#8221;</a> news application to a series of static HTML pages.</p>
+
+<ul>
+<li><p>Build parameters can be found in <code>development.yml</code>.</p>
+
+<ul>
+<li><p><code>staging</code>: A boolean value that adjust some URLs during the baking process. Default value is <code>False</code>. Set to <code>True</code> before baking out the pages so you can view baked pages on a local development server prior to deploying. Set to <code>False</code> prior to baking out the pages and deploying to the server.</p></li>
+<li><p><code>staging_prefix</code>: A string value that is the prefix to where you can access your local development server. For instance if you start your local development server from within the static-projects repo using <code>python -m SimpleHTTPServer 8880</code> this value would be <code>http://127.0.0.1:8880/</code>.</p></li>
+<li><p><code>live_prefix</code>: For our purposes this value will always be <code>http://projects.scpr.org</code>.</p></li>
+<li><p><code>deploy_dir</code>: For our purposes this value will always be the location of the project in the static-projects repo which is <code>/applications/monthly-water-use</code>.</p></li>
+<li><p><code>build_dir</code> Absolute path to the location on your machine to the static-projects repository. Might be something like <code>&quot;/Users/ckeller/_programming/2kpcc/_projects/static_projects/applications/monthly-water-use&quot;</code>.</p></li>
+<li><p><code>views</code> are the django views that represent the pages we want to build out. The views we currently have are:</p>
+
+<ul>
+<li>monthly_water_reports.views.InitialIndex
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L27</li>
+</ul></li>
+<li>monthly_water_reports.views.RegionDetailView
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/region/south-coast</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L127</li>
+</ul></li>
+<li>monthly_water_reports.views.RegionEmbedView
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/share/south-coast/</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L285</li>
+</ul></li>
+<li>monthly_water_reports.views.ComparisonIndex
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/region/south-coast/reduction-comparison/</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L409</li>
+</ul></li>
+<li>monthly_water_reports.views.EnforcementIndex
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/region/south-coast/enforcement-comparison/</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L481</li>
+</ul></li>
+<li>monthly_water_reports.views.SupplierDetailView
+
+<ul>
+<li>Example in the wild: http://projects.scpr.org/applications/monthly-water-use/city-of-compton/</li>
+<li>The code: https://github.com/SCPR/cali_water_reports/blob/master/monthly_water_reports/views.py#L547</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><p>When you are ready to build the project</p>
+
+<ul>
+<li><p>Change into the project directory</p>
+
+<pre><code>cd cali_water_reports
+</code></pre></li>
+<li><p>Open <code>development.yml</code> and set the <code>staging</code> value on line 36 to <code>True</code></p></li>
+<li><p>Run <code>fab build</code> to start baking the pages</p></li>
+<li><p>To preview the build, in a new terminal window change into wherever your KPCC work is and start your local development server</p>
+
 <pre><code>python -m SimpleHTTPServer 8880
-</code></pre>
-</li>
-<li>
-<p>Spot check the <em>&ldquo;baked&rdquo;</em> or static HTML pages you have created:</p>
+</code></pre></li>
+<li><p>Spot check the <em>&#8220;baked&#8221;</em> or static HTML pages you have created:</p>
+
 <ul>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/"><a href="http://127.0.0.1:8880/monthly-water-use/region/south-coast/"><a href="http://127.0.0.1:8880/monthly-water-use/region/south-coast/">http://127.0.0.1:8880/monthly-water-use/region/south-coast/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-pasadena/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-pasadena/">http://127.0.0.1:8880/monthly-water-use/city-of-pasadena/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-burbank/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-burbank/">http://127.0.0.1:8880/monthly-water-use/city-of-burbank/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-glendale/"><a href="http://127.0.0.1:8880/monthly-water-use/city-of-glendale/">http://127.0.0.1:8880/monthly-water-use/city-of-glendale/</a></a></a></li>
-<li><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/"><a href="http://127.0.0.1:8880/monthly-water-use/region/south-coast/enforcement-comparison/"><a href="http://127.0.0.1:8880/monthly-water-use/region/south-coast/enforcement-comparison/">http://127.0.0.1:8880/monthly-water-use/region/south-coast/enforcement-comparison/</a></a></a></li>
+<li><p><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/">http://127.0.0.1:8880/monthly-water-use/region/south-coast/</a></p></li>
+<li><p><a href="http://127.0.0.1:8000/monthly-water-use/city-of-pasadena/">http://127.0.0.1:8880/monthly-water-use/city-of-pasadena/</a></p></li>
+<li><p><a href="http://127.0.0.1:8000/monthly-water-use/city-of-burbank/">http://127.0.0.1:8880/monthly-water-use/city-of-burbank/</a></p></li>
+<li><p><a href="http://127.0.0.1:8000/monthly-water-use/city-of-glendale/">http://127.0.0.1:8880/monthly-water-use/city-of-glendale/</a></p></li>
+<li><p><a href="http://127.0.0.1:8000/monthly-water-use/region/south-coast/enforcement-comparison/">http://127.0.0.1:8880/monthly-water-use/region/south-coast/enforcement-comparison/</a></p></li>
+</ul></li>
+<li><p>If everything looks OK, let&#8217;s build for real.</p></li>
+<li><p>Open <code>development.yml</code> and set the <code>staging</code> value on line 36 to <code>Falses</code></p></li>
+<li><p>Run <code>fab build</code> to start baking the pages</p></li>
+</ul></li>
 </ul>
-</li>
-<li>
-<p>If everything looks OK, let&rsquo;s build for real.</p>
-</li>
-<li>
-<p>Open <code>development.yml</code> and set <code>staging</code> to <code>False</code></p>
-</li>
-<li>
-<p>Build the application</p>
-<pre><code>fab build
-</code></pre>
-</li>
-<li>
-<p>In the <code>static-projects</code> repo, commit and push your changes</p>
-<pre><code>git commit -a -m "updates with a new build of the monthly water use application"
+
+<h1>How We Deploy The Project Each Month</h1>
+
+<ul>
+<li><p>Assuming you want to deploy this to the <code>static-projects</code> server, at this point you can build <em>&#8220;baked&#8221;</em> or static HTML version of the application.</p>
+
+<ul>
+<li><p>Open a new terminal window and change into <code>static-projects</code></p>
+
+<pre><code>cd static-projects
+</code></pre></li>
+<li><p>Make sure the master branch is up-to-date</p>
+
+<pre><code>git pull
+</code></pre></li>
+<li><p>Switch to your development branch</p>
+
+<pre><code>git checkout aaron-dev
+</code></pre></li>
+<li><p>Make sure your development branch is current with the master branch</p>
+
+<pre><code>git merge aaron-dev master
+</code></pre></li>
+<li><p><em>If you do git status and see a bunch of modified files that’s good.</em></p></li>
+<li><p><em>If you see blue files, that means something new was created - most likely a water supplier that hadn&#8217;t existed before - and you&#8217;ll probably want to explore why.</em></p></li>
+<li><p>In the <code>static-projects</code> repo, commit and push your changes</p>
+
+<pre><code>git commit -a -m &quot;updates with a new build of the monthly water use application&quot;
 git push
-</code></pre>
-</li>
-<li>
-<p><a href="https://github.com/SCPR/static-projects/pulls">Submit a pull request</a></p>
-</li>
-<li>
-<p>You can now use deploybot to send your updated code to the server for the world to see</p>
-</li>
+</code></pre></li>
+<li><p><a href="https://github.com/SCPR/static-projects/pulls">Submit a pull request</a></p></li>
+<li><p>You can now use deploybot in Slack to send your updated code to the server for the world to see</p></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<hr />
-<h1 id="available-fabric-commands"><a name="user-content-available-fabric-commands" href="#available-fabric-commands" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Available Fabric Commands</h1>
+
+<h1>Available Fabric Commands</h1>
+
+<p><strong>Data Processing and Update Functions</strong></p>
+
 <ul>
-<li>
-<p><code>fab run</code></p>
+<li><p><code>fab test</code>: run the cali_water application tests before attempting to update with new data</p>
+
+<pre><code>local(&quot;python manage.py test&quot;)
+</code></pre></li>
+<li><p><code>fetch_enforcement_stats</code>: pull down the Excel file with the monthly enforcement stats, convert to csv and ingest into database.</p>
+
+<pre><code>local(&quot;python manage.py fetch_enforcement_stats&quot;)
+</code></pre></li>
+<li><p><code>fetch_water_use</code>: pull down the Excel file with the monthly usage stats, convert to csv and ingest into database.</p>
+
+<pre><code>local(&quot;python manage.py fetch_usage_stats&quot;)
+</code></pre></li>
+</ul>
+
+<p><strong>Development Functions</strong></p>
+
 <ul>
-<li>Launches the Django development server</li>
+<li><p><code>run</code>: shortcut for base manage.py function to launch the Django development server</p>
+
+<pre><code>local(&quot;python manage.py runserver&quot;)
+</code></pre></li>
+<li><p><code>make</code>: shortcut for base manage.py function to make Django database migrations to sync the dev database</p>
+
+<pre><code>local(&quot;python manage.py makemigrations&quot;)
+</code></pre></li>
+<li><p><code>migrate</code>: shortcut for base manage.py function to apply Django database migrations</p>
+
+<pre><code>local(&quot;python manage.py migrate&quot;)
+</code></pre></li>
+<li><p><code>superuser</code>: shortcut for base manage.py function to create a superuser</p>
+
+<pre><code>local(&quot;python manage.py createsuperuser&quot;)
+</code></pre></li>
 </ul>
-</li>
-<li>
-<p><code>fab make</code></p>
+
+<p><strong>Data Export Functions</strong></p>
+
 <ul>
-<li>Creates Django database migrations</li>
+<li><p><code>dump_regions</code>: shortcut to dump hydrologic region data fixtures</p>
+
+<pre><code>local(&quot;python manage.py dumpdata monthly_water_reports.hydrologicregion &gt; monthly_water_reports/fixtures/hydrologic_regions.json&quot;)
+</code></pre></li>
+<li><p><code>dump_suppliers</code>: shortcut to dump water supplier data fixtures</p>
+
+<pre><code>local(&quot;python manage.py dumpdata monthly_water_reports.watersupplier &gt; monthly_water_reports/fixtures/water_suppliers.json&quot;)
+</code></pre></li>
+<li><p><code>dump_reports</code>: shortcut to dump monthly water supplier use reports data fixtures</p>
+
+<pre><code>local(&quot;python manage.py dumpdata monthly_water_reports.watersuppliermonthlyreport &gt; monthly_water_reports/fixtures/supplier_reports.json&quot;)
+</code></pre></li>
+<li><p><code>dump_enforcement</code>: shortcut to dump monthly water supplier enforcement statistics data fixtures</p>
+
+<pre><code>local(&quot;python manage.py dumpdata monthly_water_reports.waterenforcementmonthlyreport &gt; monthly_water_reports/fixtures/enforcement_reports.json&quot;)
+</code></pre></li>
+<li><p><code>dump_conservation</code>: shortcut to dump water conservation data fixtures</p>
+
+<pre><code>local(&quot;python manage.py dumpdata monthly_water_reports.waterconservationmethod &gt; monthly_water_reports/fixtures/conservation_methods.json&quot;)
+</code></pre></li>
+<li><p><code>dump_fixtures</code>: shortcut to dump all data fixtures with logging</p>
+
+<pre><code>logger.debug(&quot;Dumping out data fixtures for %s django project&quot; % (CONFIG[&quot;database&quot;][&quot;database&quot;]))
+dump_regions()
+logger.debug(&quot;Regions are exported&quot;)
+dump_suppliers()
+logger.debug(&quot;Suppliers are exported&quot;)
+dump_enforcement()
+logger.debug(&quot;Enforcement stats are exported&quot;)
+dump_conservation()
+logger.debug(&quot;Conservation methods are exported&quot;)
+dump_reports()
+logger.debug(&quot;Monthly reports are exported&quot;)
+</code></pre></li>
 </ul>
-</li>
-<li>
-<p><code>fab migrate</code></p>
+
+<p><strong>Data Import Functions</strong></p>
+
 <ul>
-<li>Applies Django database migrations</li>
+<li><p><code>load_regions</code>: shortcut to load hydrologic region data fixtures</p>
+
+<pre><code>local(&quot;python manage.py loaddata monthly_water_reports/fixtures/hydrologic_regions.json&quot;)
+</code></pre></li>
+<li><p><code>load_suppliers</code>: shortcut to load water supplier data fixtures</p>
+
+<pre><code>local(&quot;python manage.py loaddata monthly_water_reports/fixtures/water_suppliers.json&quot;)
+</code></pre></li>
+<li><p><code>load_reports</code>: shortcut to load monthly water supplier use reports data fixtures</p>
+
+<pre><code>local(&quot;python manage.py loaddata monthly_water_reports/fixtures/supplier_reports.json&quot;)
+</code></pre></li>
+<li><p><code>load_enforcement</code>: shortcut to load monthly water supplier enforcement statistics data fixtures</p>
+
+<pre><code>local(&quot;python manage.py loaddata monthly_water_reports/fixtures/enforcement_reports.json&quot;)
+</code></pre></li>
+<li><p><code>load_conservation</code>: shortcut to load water conservation data fixtures</p>
+
+<pre><code>local(&quot;python manage.py loaddata monthly_water_reports/fixtures/conservation_methods.json&quot;)
+</code></pre></li>
+<li><p><code>load_fixtures</code>: shortcut to load all data fixtures with logging</p>
+
+<pre><code>logger.debug(&quot;Loading data fixtures for %s django project&quot; % (CONFIG[&quot;database&quot;][&quot;database&quot;]))
+load_regions()
+logger.debug(&quot;Regions are loaded&quot;)
+load_suppliers()
+logger.debug(&quot;Suppliers are loaded&quot;)
+load_enforcement()
+logger.debug(&quot;Enforcement stats are loaded&quot;)
+load_conservation()
+logger.debug(&quot;Conservation methods are loaded&quot;)
+load_reports()
+logger.debug(&quot;Monthly reports are loaded&quot;)
+</code></pre></li>
 </ul>
-</li>
-<li>
-<p><code>fab requirements</code></p>
+
+<p><strong>Bootstrapping Functions</strong></p>
+
 <ul>
-<li>Installs Python packages from requirements.txt file</li>
+<li><p><code>rename_files</code>: shortcut to install requirements from repository&#8217;s requirements.txt
+ os.rename(&#8220;cali_water_reports/settings_common.py.template&#8221;, &#8220;cali_water_reports/settings_common.py&#8221;)
+ os.rename(&#8220;cali_water_reports/settings_production.py.template&#8221;, &#8220;cali_water_reports/settings_production.py&#8221;)</p></li>
+<li><p><code>requirements</code>: shortcut to install requirements from repository&#8217;s <code>requirements.txt</code></p>
+
+<pre><code>local(&quot;pip install -r requirements.txt&quot;)
+</code></pre></li>
+<li><p><code>create_db</code>: Creates a database based on DATABASE variables in <code>settings_development.py</code> file</p>
+
+<pre><code>connection = None
+db_config = CONFIG[&quot;database&quot;]
+logger.debug(&quot;Creating %s database for %s django project&quot; % (db_config[&quot;database&quot;], env.project_name))
+create_statement = &quot;CREATE DATABASE %s&quot; % (db_config[&quot;database&quot;])
+try:
+    connection = MySQLdb.connect(
+        host = db_config[&quot;host&quot;],
+        user = db_config[&quot;username&quot;],
+        passwd = db_config[&quot;password&quot;]
+    )
+    cursor = connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(create_statement)
+    connection.commit()
+except MySQLdb.DatabaseError, e:
+    print &quot;Error %s&quot; % (e)
+    sys.exit(1)
+finally:
+    if connection:
+        connection.close()
+</code></pre></li>
+<li><p><code>makesecret</code>: generates secret key for use in <a href="https://github.com/datadesk/django-project-template/blob/master/fabfile/makesecret.py">django settings</a></p>
+
+<pre><code>key = ''.join(random.choice(allowed_chars) for i in range(length))
+print 'SECRET_KEY = &quot;%s&quot;' % key
+</code></pre></li>
+<li><p><code>build</code>: Activates the django-bakery script to build the views specified in <code>settings_development.py</code></p>
+
+<pre><code>local(&quot;python manage.py build&quot;)
+</code></pre></li>
+<li><p><code>buildserver</code>: Activates the django-bakery development server</p>
+
+<pre><code>local(&quot;python manage.py buildserver&quot;)
+</code></pre></li>
+<li><p><code>bootstrap</code>: Attempts to scaffold the project by:
+ * Creating the database
+ * Applying initial Django migrations
+ * Ingesting the initial data fixtures
+ * Creating the Django superuser
+ * Running the Django development server</p></li>
 </ul>
-</li>
-<li>
-<p><code>fab create_db</code></p>
+
+<h1>Mac OS Python development environment</h1>
+
 <ul>
-<li>Creates a database based on DATABASE variables in <code>settings_development.py</code> file</li>
-</ul>
-</li>
-<li>
-<p><code>fab bootstrap</code></p>
+<li><p>Assumming homebrew is installed&#8230;</p>
+
 <ul>
-<li>Attempts to scaffold the project by:<ul>
-<li>Create virtualenv</li>
-<li>Activates the virtualenv</li>
-<li>Installs requirements</li>
-<li>Creates the database</li>
-<li>Applies initial Django migrations</li>
-<li>Creates the Django superuser</li>
-<li>Runs the Django development server</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><code>fab build</code></p>
-<ul>
-<li>Activates the django-bakery script to build the views specified in <code>settings_development.py</code></li>
-</ul>
-</li>
-<li>
-<p><code>fab buildserver</code></p>
-<ul>
-<li>Activates the django-bakery development server</li>
-</ul>
-</li>
-<li>
-<p><code>fab commit</code></p>
-<ul>
-<li>Commits and pushes to the version control repo</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h1 id="mac-os-python-development-environment"><a name="user-content-mac-os-python-development-environment" href="#mac-os-python-development-environment" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Mac OS Python development environment</h1>
-<ul>
-<li>
-<p>Install homebrew python</p>
+<li><p>Install homebrew python</p>
+
 <pre><code>cd /System/Library/Frameworks/Python.framework/Versions
 sudo rm Current
 brew install python
@@ -1343,22 +463,20 @@ pip install virtualenvwrapper
 python --version
 source /usr/local/bin/virtualenvwrapper.sh
 sudo ln -s /usr/local/Cellar/python/2.7.8_2 /System/Library/Frameworks/Python.framework/Versions/Current
-</code></pre>
-</li>
-<li>
-<p>Configure $PATH variables for python, virtualenv</p>
+</code></pre></li>
+<li><p>Configure $PATH variables for python, virtualenv</p>
+
 <pre><code># homebrew path
-export PATH="/usr/local/bin:$PATH"
+export PATH=&quot;/usr/local/bin:$PATH&quot;
 
 # virtualenvwrapper settings
 export WORKON_HOME=$HOME/.virtualenvs
 export PIP_VIRTUALENV_BASE=$WORKON_HOME
 export PIP_RESPECT_VIRTUALENV=true
 source /usr/local/bin/virtualenvwrapper.sh
-</code></pre>
-</li>
-<li>
-<p>Install MySQL via homebrew</p>
+</code></pre></li>
+<li><p>Install MySQL via homebrew</p>
+
 <pre><code>brew remove mysql
 brew cleanup
 launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
@@ -1366,15 +484,14 @@ rm ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
 sudo rm -rf /usr/local/var/mysql
 brew install mysql
 ln -sfv /usr/local/opt/mysql/*.plist ~/Library/LaunchAgents
-</code></pre>
-</li>
-<li>
-<p>Getting mysql up and running</p>
+</code></pre></li>
+<li><p>Getting mysql up and running</p>
+
 <pre><code>mysql.server start
 mysql_secure_installation
 mysql -u root -p
 SHOW DATABASES;
 SET default_storage_engine=MYISAM;
-</code></pre>
-</li>
-</ul></article></body></html>
+</code></pre></li>
+</ul></li>
+</ul>
