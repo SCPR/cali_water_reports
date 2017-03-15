@@ -56,6 +56,20 @@ def fetch_water_use():
     local("python manage.py fetch_usage_stats")
 
 
+def dump_regions():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.hydrologicregion > monthly_water_reports/fixtures/hydrologic_regions.json")
+
+
+def load_regions():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/hydrologic_regions.json")
+
+
 def dump_suppliers():
     """
     shortcut to load ballot box data fixtures
@@ -96,6 +110,20 @@ def load_enforcement():
     shortcut to load ballot box data fixtures
     """
     local("python manage.py loaddata monthly_water_reports/fixtures/enforcement_reports.json")
+
+
+def dump_conservation():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.waterconservationmethod > monthly_water_reports/fixtures/conservation_methods.json")
+
+
+def load_conservation():
+    """
+    shortcut to load ballot box data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/conservation_methods.json")
 
 
 """
@@ -234,22 +262,46 @@ def deploy():
     commit()
 
 
+def dump_fixtures():
+    logger.debug("Dumping out data fixtures for %s django project" % (CONFIG["database"]["database"]))
+    dump_regions()
+    logger.debug("Regions are exported")
+    dump_suppliers()
+    logger.debug("Suppliers are exported")
+    dump_enforcement()
+    logger.debug("Enforcement stats are exported")
+    dump_conservation()
+    logger.debug("Conservation methods are exported")
+    dump_reports()
+    logger.debug("Monthly reports are exported")
+
+
+def load_fixtures():
+    logger.debug("Loading data fixtures for %s django project" % (CONFIG["database"]["database"]))
+    load_regions()
+    logger.debug("Regions are loaded")
+    load_suppliers()
+    logger.debug("Suppliers are loaded")
+    load_enforcement()
+    logger.debug("Enforcement stats are loaded")
+    load_conservation()
+    logger.debug("Conservation methods are loaded")
+    load_reports()
+    logger.debug("Monthly reports are loaded")
+
+
 def bootstrap():
     """
     run tasks to setup the base project
     """
-    with prefix("WORKON_HOME=$HOME/.virtualenvs"):
-        with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
-            local("mkvirtualenv %s" % (env.project_name))
-            with prefix("workon %s" % (env.project_name)):
-                requirements()
-                time.sleep(2)
-                create_db()
-                time.sleep(2)
-                migrate()
-                time.sleep(2)
-                local("python manage.py createsuperuser")
-                run()
+    create_db()
+    time.sleep(2)
+    migrate()
+    time.sleep(2)
+    load_fixtures()
+    time.sleep(2)
+    local("python manage.py createsuperuser")
+    run()
 
 
 def __env_cmd(cmd):
