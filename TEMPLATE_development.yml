@@ -26,14 +26,13 @@ cache:
 data_source:
 
   # assumes named something like 102915enforcement_statistics.xlsx
-  data_path: ""
   file_download_path: ""
+  data_path: ""
   enforcement_file: ""
   usage_file: ""
 
 # required absolute path to the build & deploy directory for django-bakery and deployment
 build:
-  bakery_gzip: False
   staging: False
   staging_prefix: ""
   live_prefix: "http://projects.scpr.org"

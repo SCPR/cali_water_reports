@@ -73,7 +73,6 @@ STATICFILES_DIRS = (
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 if "build" in CONFIG:
-    BAKERY_GZIP = CONFIG["build"]["bakery_gzip"]
     STAGING = CONFIG["build"]["staging"]
     STAGING_PREFIX = CONFIG["build"]["staging_prefix"]
     LIVE_PREFIX = CONFIG["build"]["live_prefix"]
