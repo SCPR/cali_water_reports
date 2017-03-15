@@ -14,14 +14,9 @@ admin.autodiscover()
 urlpatterns = [
     url(r"^admin/doc/", include("django.contrib.admindocs.urls")),
     url(r"^admin/", include(admin.site.urls)),
-    url(r"^admin/", include("massadmin.urls")),
     url(r"^monthly-water-use/", include("monthly_water_reports.urls")),
     url(r"^", RedirectView.as_view(url="monthly-water-use/", permanent=False)),
 ]
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += patterns("", url(r'^__debug__/', include(debug_toolbar.urls)),)
 
 if settings.DEBUG and settings.MEDIA_ROOT:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

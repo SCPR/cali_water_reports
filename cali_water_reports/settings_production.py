@@ -15,10 +15,6 @@ CONFIG = yaml.load(open(CONFIG_FILE))
 DEBUG = CONFIG.get("debug", False)
 TEMPLATE_DEBUG = DEBUG
 
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
-
-DEBUG_TOOLBAR = DEBUG
-
 INTERNAL_IPS = CONFIG.get("internal_ips", None)
 
 DATABASES = {
@@ -43,62 +39,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 if CONFIG["installed_apps"]:
     INSTALLED_APPS += tuple(CONFIG["installed_apps"])
-
-# django debug toolbar configuration
-if DEBUG_TOOLBAR == True:
-
-    # debugging toolbar middleware
-    MIDDLEWARE_CLASSES += (
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
-
-    # javascript panels for the development debugging toolbar
-    DEBUG_TOOLBAR_PANELS = (
-        "debug_toolbar.panels.versions.VersionsPanel",
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.settings.SettingsPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-        "debug_toolbar.panels.templates.TemplatesPanel",
-        "debug_toolbar.panels.cache.CachePanel",
-        "debug_toolbar.panels.signals.SignalsPanel",
-        "debug_toolbar.panels.logging.LoggingPanel",
-        "debug_toolbar.panels.redirects.RedirectsPanel",
-    )
-
-    # Debug toolbar app
-    INSTALLED_APPS += ("debug_toolbar",)
-
-    CONFIG_DEFAULTS = {
-        "SHOW_COLLAPSED": False,
-        "SQL_WARNING_THRESHOLD": 500,
-        "INTERCEPT_REDIRECTS": False,
-        "SHOW_TOOLBAR_CONFIG": (lambda: DEBUG)
-    }
-
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
-    }
-
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "redis_cache.cache.RedisCache",
-            "LOCATION": "%s:%s:%s" % (
-                CONFIG["cache"]["host"],
-                CONFIG["cache"]["port"],
-                CONFIG["cache"]["db"]
-            ),
-            "OPTIONS": {
-                "CLIENT_CLASS": "redis_cache.client.DefaultClient",
-            }
-        }
-    }
 
 # Python dotted path to the WSGI application used by Django"s runserver.
 WSGI_APPLICATION = "cali_water_reports.wsgi.application"

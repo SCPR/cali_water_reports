@@ -88,10 +88,7 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
 
     # api & tools
-    # "massadmin",
-    #"tastypie",
     "bakery",
-    "django_admin_bootstrapped",
     "django.contrib.admin",
     "django.contrib.admindocs",
 )
@@ -123,13 +120,6 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple"
         },
-
-        #"file": {
-            #"level": "DEBUG",
-            #"class": "logging.FileHandler",
-            #"filename": "mysite.log",
-            #"formatter": "verbose"
-        #},
     },
 
     "loggers": {
