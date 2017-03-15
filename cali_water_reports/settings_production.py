@@ -34,43 +34,10 @@ DATABASES = {
 
 SECRET_KEY = CONFIG["secret_key"]
 
-# twitter api though should change this
-TWITTER_CONSUMER_KEY         = CONFIG["api"]["twitter"]["consumer_key"]
-TWITTER_CONSUMER_SECRET      = CONFIG["api"]["twitter"]["consumer_secret"]
-TWITTER_ACCESS_TOKEN         = CONFIG["api"]["twitter"]["access_token"]
-TWITTER_ACCESS_TOKEN_SECRET  = CONFIG["api"]["twitter"]["access_token_secret"]
-LOCAL_TWITTER_TIMEZONE = pytz.timezone("US/Pacific")
-TWITTER_TIMEZONE = timezone("UTC")
-
-# maplight api key
-MAP_LIGHT_API_KEY = CONFIG["api"]["maplight"]["api_key"]
-
 REQUEST_HEADERS = {
     "From": CONFIG["api"]["headers"]["from"],
     "User-agent": CONFIG["api"]["headers"]["user_agent"]
 }
-
-# assethost api token
-ASSETHOST_TOKEN_SECRET = CONFIG["api"]["assethost"]["token_secret"]
-
-# key for the public insight network
-PIN_NETWORK_API_KEY = CONFIG["api"]["pin_network"]["api_key"]
-
-# keys for the instagram
-INSTAGRAM_CLIENT_ID = CONFIG["api"]["instagram"]["instagram_client_id"]
-INSTAGRAM_CLIENT_SECRET = CONFIG["api"]["instagram"]["instagram_client_secret"]
-
-# auth to send out emails when models change
-if "email" in CONFIG:
-    EMAIL_HOST = CONFIG["email"]["host"]
-    EMAIL_HOST_USER = CONFIG["email"]["user"]
-    EMAIL_HOST_PASSWORD = CONFIG["email"]["password"]
-    EMAIL_PORT = CONFIG["email"]["port"]
-    EMAIL_USE_TLS = CONFIG["email"]["use_tls"]
-
-#CACHE_MIDDLEWARE_ALIAS = 'default'
-#CACHE_MIDDLEWARE_SECONDS = (60 * 5)
-#CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
