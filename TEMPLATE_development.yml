@@ -14,17 +14,9 @@ installed_apps:
 database:
   host: "127.0.0.1"
   port: 3306
-  database: ""
+  database: "cali_water_reports"
   username: ""
   password: ""
-
-# optional if you intend to generate emails from an application
-email:
-  host: ""
-  user: ""
-  password: ""
-  port: 587
-  use_tls: True
 
 cache:
   host: localhost
@@ -58,30 +50,7 @@ build:
 # api settings and keys for the application
 api:
 
-  # key to access twitter api
-  twitter:
-    consumer_key: ""
-    consumer_secret: ""
-    access_token: ""
-    access_token_secret: ""
-
-  # key for kpcc's assethost API
-  assethost:
-    token_secret: ""
-
-  # key for the public insight network
-  pin_network:
-    api_key: ""
-
-  instagram:
-    instagram_client_id: ""
-    instagram_client_secret: ""
-
-  # required key for maplight's api: http://maplight.org/us-congress/guide/tools/apis-and-widgets
-  maplight:
-    api_key: ""
-
   # headers to use for api requests
   headers:
-    from: "KPCC - Southern California Public Radio (ckeller@scpr.org)"
+    from: "KPCC - Southern California Public Radio"
     user_agent: "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19"
