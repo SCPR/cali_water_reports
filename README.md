@@ -7,7 +7,7 @@ There are three main steps to build the site you see [here](http://projects.scpr
 
 * [How We Process And Update Data Each Month](#how-we-process-and-update-data-each-month)
 * [How We Build The Project Each Month](#how-we-build-the-project-each-month)
-* [How We Deploy The Project Each Month](#how-we-build-the-project-each-month)
+* [How We Deploy The Project Each Month](#how-we-deploy-the-project-each-month)
 
 Table of Contents
 =================
