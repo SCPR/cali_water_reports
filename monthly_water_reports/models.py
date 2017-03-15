@@ -141,44 +141,6 @@ class WaterEnforcementMonthlyReport(models.Model):
         super(WaterEnforcementMonthlyReport, self).save(*args, **kwargs)
 
 
-# model for incentives offered to water customers
-class WaterIncentive(models.Model):
-    supplier_name = models.ForeignKey(WaterSupplier, to_field="supplier_name")
-    incentives_details = models.TextField("Incentives Details", null=True, blank=True)
-    incentives_last_updated = models.DateTimeField("Incentive Last Updated", blank=True)
-    incentives_offered = models.BooleanField("Incentives Offered", default=False)
-    incentives_url = models.URLField("URL Turf Incentive Details", max_length=1024, null=True, blank=True)
-    turf_rebate_amount = models.FloatField("Turf Removal Reimbursement Amount", null=True, blank=True)
-    turf_removal_details = models.TextField("Turf Removal Details", null=True, blank=True)
-    turf_removal_last_updated = models.DateTimeField("Turf Removal Last Updated", blank=True)
-    turf_removal_offered = models.BooleanField("Turf Removal Offered", default=False)
-    turf_removal_url = models.URLField("URL Turf Removal Details", max_length=1024, null=True, blank=True)
-
-    def __unicode__(self):
-        return self.supplier_name_id
-
-    def save(self, *args, **kwargs):
-        super(WaterIncentive, self).save(*args, **kwargs)
-
-
-# model for restrictions in place for water suppliers
-class WaterRestriction(models.Model):
-    supplier_name = models.ForeignKey(WaterSupplier, to_field="supplier_name")
-    restriction_current_status = models.CharField("Current Status", max_length=255, null=True, blank=True)
-    restriction_current_url = models.URLField("URL Water Restriction Details", max_length=1024, null=True, blank=True)
-    restriction_violation_fine = models.FloatField("Fine amount for violation of restriction", null=True, blank=True)
-    restriction_how_enforce = models.TextField("Turf Removal Details", null=True, blank=True)
-    restriction = models.BooleanField("Restrictions In Place", default=False)
-    restriction_details = models.TextField("Restriction Details", null=True, blank=True)
-    restrictions_last_updated = models.DateTimeField("Restrictions Last Updated", blank=True)
-
-    def __unicode__(self):
-        return self.supplier_name_id
-
-    def save(self, *args, **kwargs):
-        super(WaterRestriction, self).save(*args, **kwargs)
-
-
 # model for how consumers can conserve water
 class WaterConservationMethod(models.Model):
     method_name = models.CharField("Water Conservation Method Name", max_length=255, null=True, blank=True)
