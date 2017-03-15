@@ -38,9 +38,13 @@ logging.basicConfig(
 )
 
 
-"""
-monthly tasks
-"""
+# data processing and update functions
+def test():
+    """
+    run the cali_water application tests before attempting to update with new data
+    """
+    local("python manage.py test")
+
 
 def fetch_enforcement_stats():
     """
@@ -56,80 +60,7 @@ def fetch_water_use():
     local("python manage.py fetch_usage_stats")
 
 
-def dump_regions():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py dumpdata monthly_water_reports.hydrologicregion > monthly_water_reports/fixtures/hydrologic_regions.json")
-
-
-def load_regions():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py loaddata monthly_water_reports/fixtures/hydrologic_regions.json")
-
-
-def dump_suppliers():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py dumpdata monthly_water_reports.watersupplier > monthly_water_reports/fixtures/water_suppliers.json")
-
-
-def load_suppliers():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py loaddata monthly_water_reports/fixtures/water_suppliers.json")
-
-
-def dump_reports():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py dumpdata monthly_water_reports.watersuppliermonthlyreport > monthly_water_reports/fixtures/supplier_reports.json")
-
-
-def load_reports():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py loaddata monthly_water_reports/fixtures/supplier_reports.json")
-
-
-def dump_enforcement():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py dumpdata monthly_water_reports.waterenforcementmonthlyreport > monthly_water_reports/fixtures/enforcement_reports.json")
-
-
-def load_enforcement():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py loaddata monthly_water_reports/fixtures/enforcement_reports.json")
-
-
-def dump_conservation():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py dumpdata monthly_water_reports.waterconservationmethod > monthly_water_reports/fixtures/conservation_methods.json")
-
-
-def load_conservation():
-    """
-    shortcut to load ballot box data fixtures
-    """
-    local("python manage.py loaddata monthly_water_reports/fixtures/conservation_methods.json")
-
-
-"""
-development functions
-"""
-
+# development functions
 def run():
     """
     shortcut for base manage.py function to run the dev server
@@ -158,17 +89,112 @@ def superuser():
     local("python manage.py createsuperuser")
 
 
-def test():
+# data export functions
+def dump_regions():
     """
-    shortcut for base manage.py function to create a superuser
+    shortcut to dump hydrologic region data fixtures
     """
-    local("python manage.py test")
+    local("python manage.py dumpdata monthly_water_reports.hydrologicregion > monthly_water_reports/fixtures/hydrologic_regions.json")
 
 
-"""
-bootstrapping functions
-"""
+def dump_suppliers():
+    """
+    shortcut to dump water supplier data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.watersupplier > monthly_water_reports/fixtures/water_suppliers.json")
 
+
+def dump_reports():
+    """
+    shortcut to dump monthly water supplier use reports data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.watersuppliermonthlyreport > monthly_water_reports/fixtures/supplier_reports.json")
+
+
+def dump_enforcement():
+    """
+    shortcut to dump monthly water supplier enforcement statistics data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.waterenforcementmonthlyreport > monthly_water_reports/fixtures/enforcement_reports.json")
+
+
+def dump_conservation():
+    """
+    shortcut to dump water conservation data fixtures
+    """
+    local("python manage.py dumpdata monthly_water_reports.waterconservationmethod > monthly_water_reports/fixtures/conservation_methods.json")
+
+
+def dump_fixtures():
+    """
+    shortcut to dump all data fixtures with logging
+    """
+    logger.debug("Dumping out data fixtures for %s django project" % (CONFIG["database"]["database"]))
+    dump_regions()
+    logger.debug("Regions are exported")
+    dump_suppliers()
+    logger.debug("Suppliers are exported")
+    dump_enforcement()
+    logger.debug("Enforcement stats are exported")
+    dump_conservation()
+    logger.debug("Conservation methods are exported")
+    dump_reports()
+    logger.debug("Monthly reports are exported")
+
+
+# data import functions
+def load_regions():
+    """
+    shortcut to load hydrologic region data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/hydrologic_regions.json")
+
+
+def load_suppliers():
+    """
+    shortcut to load water supplier data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/water_suppliers.json")
+
+
+def load_reports():
+    """
+    shortcut to load monthly water supplier use reports data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/supplier_reports.json")
+
+
+def load_enforcement():
+    """
+    shortcut to load monthly water supplier enforcement statistics data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/enforcement_reports.json")
+
+
+def load_conservation():
+    """
+    shortcut to load water conservation data fixtures
+    """
+    local("python manage.py loaddata monthly_water_reports/fixtures/conservation_methods.json")
+
+
+def load_fixtures():
+    """
+    shortcut to load all data fixtures with logging
+    """
+    logger.debug("Loading data fixtures for %s django project" % (CONFIG["database"]["database"]))
+    load_regions()
+    logger.debug("Regions are loaded")
+    load_suppliers()
+    logger.debug("Suppliers are loaded")
+    load_enforcement()
+    logger.debug("Enforcement stats are loaded")
+    load_conservation()
+    logger.debug("Conservation methods are loaded")
+    load_reports()
+    logger.debug("Monthly reports are loaded")
+
+# bootstrapping functions
 def rename_files():
     """
     shortcut to install requirements from repository's requirements.txt
@@ -227,67 +253,6 @@ def build():
 
 def buildserver():
     local("python manage.py buildserver")
-
-
-def move():
-    """
-    move the static html pages to the public directory
-    """
-    local("python manage.py move_baked_files")
-
-
-def commit(message='updates'):
-    """
-    commit changes in codebase to github repo
-    """
-    with lcd(settings.DEPLOY_DIR):
-        try:
-            message = raw_input("Enter a git commit message:  ")
-            local("git add -A && git commit -m \"%s\"" % message)
-        except:
-            print(green("Nothing new to commit.", bold=False))
-        local("git push")
-
-
-def deploy():
-    """
-    deploy the latest codebase
-    """
-    data()
-    time.sleep(5)
-    build()
-    time.sleep(5)
-    local("python manage.py move_baked_files")
-    time.sleep(5)
-    commit()
-
-
-def dump_fixtures():
-    logger.debug("Dumping out data fixtures for %s django project" % (CONFIG["database"]["database"]))
-    dump_regions()
-    logger.debug("Regions are exported")
-    dump_suppliers()
-    logger.debug("Suppliers are exported")
-    dump_enforcement()
-    logger.debug("Enforcement stats are exported")
-    dump_conservation()
-    logger.debug("Conservation methods are exported")
-    dump_reports()
-    logger.debug("Monthly reports are exported")
-
-
-def load_fixtures():
-    logger.debug("Loading data fixtures for %s django project" % (CONFIG["database"]["database"]))
-    load_regions()
-    logger.debug("Regions are loaded")
-    load_suppliers()
-    logger.debug("Suppliers are loaded")
-    load_enforcement()
-    logger.debug("Enforcement stats are loaded")
-    load_conservation()
-    logger.debug("Conservation methods are loaded")
-    load_reports()
-    logger.debug("Monthly reports are loaded")
 
 
 def bootstrap():
